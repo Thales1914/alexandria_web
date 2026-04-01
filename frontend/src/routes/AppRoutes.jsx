@@ -1,7 +1,8 @@
-﻿import { Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Comunidade from '../pages/Comunidade';
 import Explorar from '../pages/Explorar';
 import Home from '../pages/Home';
+import NaoEncontrado from '../pages/NaoEncontrado';
 import NotFound from '../pages/NotFound';
 
 function AppRoutes() {
@@ -10,6 +11,7 @@ function AppRoutes() {
       <Route path="/" element={<Home />} />
       <Route path="/explorar" element={<Explorar />} />
       <Route path="/comunidade" element={<Comunidade />} />
+      <Route path="/nao-encontrado" element={<NaoEncontrado />} />
       <Route path="/404" element={<NotFound />} />
       <Route path="*" element={<NotFound />} />
     </Routes>

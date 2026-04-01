@@ -1,10 +1,12 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AlertMessage from '../components/AlertMessage';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import '../styles/pages/Home.css';
 
 function Home() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [alert, setAlert] = useState(null);
   const [inputState, setInputState] = useState('default');
@@ -26,13 +28,7 @@ function Home() {
       return;
     }
 
-    setInputState('success');
-    setInputMessage('Título informado corretamente.');
-    setAlert({
-      type: 'success',
-      title: 'Busca pronta',
-      message: `Pesquisa preparada para "${normalizedSearch}".`,
-    });
+    navigate(`/nao-encontrado?q=${encodeURIComponent(normalizedSearch)}`);
   };
 
   const handleChange = (event) => {
@@ -79,7 +75,7 @@ function Home() {
 
           <form className="home-form" onSubmit={handleSearch}>
             <Input
-              hint="No momento, a interface valida a busca e prepara o frontend para a integração futura."
+              hint="Digite o nome de um livro para realizar a busca."
               id="book-search"
               label="Livro"
               onChange={handleChange}
@@ -124,8 +120,8 @@ function Home() {
             <span className="home-info-card__tag">Descoberta</span>
             <h3>Busca centralizada</h3>
             <p>
-              Encontre títulos com rapidez e deixe a interface pronta para a
-              busca real de livros no próximo passo.
+              Encontre títulos com rapidez e navegue por uma experiência clara,
+              pensada para descobrir e organizar livros.
             </p>
           </article>
         </div>
