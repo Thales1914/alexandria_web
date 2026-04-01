@@ -1,35 +1,47 @@
-.button {
+﻿.button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: fit-content;
-  padding: 14px 24px;
-  border: 1px solid var(--cyan);
-  border-radius: 4px;
-  background: transparent;
-  color: var(--cyan);
-  font-size: 0.9rem;
+  min-height: 54px;
+  padding: 0 24px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  font-size: 0.96rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: -0.01em;
   cursor: pointer;
-  transition: 0.3s;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .button:hover {
-  background: rgba(100, 255, 218, 0.1);
-  box-shadow: 0 0 20px rgba(100, 255, 218, 0.2);
+  transform: translateY(-1px);
 }
 
 .button--primary {
-  background: transparent;
-  color: var(--cyan);
+  background: var(--cyan);
+  border-color: var(--cyan);
+  color: var(--dark-navy);
+}
+
+.button--primary:hover {
+  background: #79ffe1;
+  border-color: #79ffe1;
 }
 
 .button--secondary {
-  background: var(--light-navy);
-  border-color: rgba(100, 255, 218, 0.2);
+  border-color: rgba(100, 255, 218, 0.18);
+  background: rgba(100, 255, 218, 0.04);
   color: var(--light-slate);
+}
+
+.button--secondary:hover {
+  border-color: rgba(100, 255, 218, 0.28);
+  background: rgba(100, 255, 218, 0.08);
 }
 
 .button--full-width {

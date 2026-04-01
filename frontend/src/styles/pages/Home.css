@@ -1,4 +1,4 @@
-.home-container {
+﻿.home-container {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -11,9 +11,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 5%;
+  padding: 56px 5%;
   text-align: center;
-  background: linear-gradient(rgba(10, 25, 47, 0.7), rgba(10, 25, 47, 1));
+  border: 1px solid rgba(100, 255, 218, 0.08);
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(17, 34, 64, 0.78), rgba(10, 25, 47, 0.96));
 }
 
 .hero-content {
@@ -30,7 +32,7 @@
 }
 
 .hero h1 {
-  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-size: clamp(2.7rem, 5vw, 4.2rem);
   color: var(--white);
   margin-bottom: 20px;
   font-weight: 800;
@@ -59,13 +61,13 @@
 }
 
 .home-panel {
-  max-width: 720px;
+  max-width: 760px;
   margin: 0 auto;
   padding: 32px;
-  border-radius: 12px;
-  border: 1px solid rgba(100, 255, 218, 0.1);
-  background: var(--light-navy);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  border-radius: 20px;
+  border: 1px solid rgba(100, 255, 218, 0.08);
+  background: rgba(17, 34, 64, 0.86);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
 .home-panel__header {
@@ -96,16 +98,17 @@
 }
 
 .home-info-card {
-  background-color: var(--navy);
-  border-radius: 8px;
-  border: 1px solid rgba(100, 255, 218, 0.1);
+  background-color: rgba(17, 34, 64, 0.82);
+  border-radius: 16px;
+  border: 1px solid rgba(100, 255, 218, 0.08);
   padding: 24px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .home-info-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  transform: translateY(-6px);
+  border-color: rgba(100, 255, 218, 0.16);
+  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.24);
 }
 
 .home-info-card__tag {
@@ -121,7 +124,7 @@
 .home-info-card h3 {
   color: var(--white);
   margin-bottom: 10px;
-  font-size: 1.55rem;
+  font-size: 1.45rem;
   font-weight: 700;
   line-height: 1.2;
 }
@@ -141,6 +144,12 @@
 @media (max-width: 640px) {
   .home-container {
     padding: 12px;
+  }
+
+  .hero {
+    min-height: auto;
+    padding: 42px 20px;
+    border-radius: 22px;
   }
 
   .section {

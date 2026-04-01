@@ -1,4 +1,4 @@
-.input-field {
+﻿.input-field {
   display: grid;
   gap: 8px;
 }
@@ -6,20 +6,21 @@
 .input-field__label {
   color: var(--light-slate);
   font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .input-field__control {
   width: 100%;
-  padding: 12px 15px;
-  border: 1px solid rgba(100, 255, 218, 0.2);
-  border-radius: 4px;
-  background: var(--navy);
+  min-height: 56px;
+  padding: 0 16px;
+  border: 1px solid rgba(100, 255, 218, 0.16);
+  border-radius: 14px;
+  background: rgba(10, 25, 47, 0.72);
   color: var(--white);
   font-size: 1rem;
-  transition: 0.3s;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .input-field__control::placeholder {
@@ -27,11 +28,37 @@
 }
 
 .input-field__control:focus {
-  border-color: var(--cyan);
-  box-shadow: 0 0 10px rgba(100, 255, 218, 0.1);
+  border-color: rgba(100, 255, 218, 0.45);
+  box-shadow: 0 0 0 4px rgba(100, 255, 218, 0.08);
+}
+
+.input-field__control--error {
+  border-color: rgba(255, 123, 114, 0.5);
+}
+
+.input-field__control--error:focus {
+  border-color: rgba(255, 123, 114, 0.6);
+  box-shadow: 0 0 0 4px rgba(255, 123, 114, 0.08);
+}
+
+.input-field__control--success {
+  border-color: rgba(100, 255, 218, 0.38);
+}
+
+.input-field__message,
+.input-field__hint {
+  font-size: 0.84rem;
+  line-height: 1.5;
 }
 
 .input-field__hint {
   color: var(--slate);
-  font-size: 0.8rem;
+}
+
+.input-field__message--error {
+  color: #ffb4a8;
+}
+
+.input-field__message--success {
+  color: var(--cyan);
 }
