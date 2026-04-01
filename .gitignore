@@ -1,0 +1,22 @@
+# Root repository
+.DS_Store
+Thumbs.db
+
+# Local backups
+.repo-backups/
+
+# Frontend runtime artifacts
+frontend/.vite-dev*.log
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+
+# Backend runtime artifacts
+backend/target/
+backend/.idea/
+backend/.backend-run.log
+
+# Editors
+.vscode/
+.idea/
