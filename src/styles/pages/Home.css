@@ -1,0 +1,149 @@
+.home-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.hero {
+  width: 100%;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 5%;
+  text-align: center;
+  background: linear-gradient(rgba(10, 25, 47, 0.7), rgba(10, 25, 47, 1));
+}
+
+.hero-content {
+  max-width: 760px;
+}
+
+.hero-tag {
+  margin-bottom: 14px;
+  color: var(--cyan);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  color: var(--white);
+  margin-bottom: 20px;
+  font-weight: 800;
+  line-height: 1.05;
+}
+
+.hero-text {
+  color: var(--slate);
+  max-width: 720px;
+  margin: 0 auto;
+  font-size: 1.08rem;
+  line-height: 1.75;
+}
+
+.section {
+  width: 100%;
+  padding: 40px 5%;
+}
+
+.section h2 {
+  margin-bottom: 20px;
+  color: var(--white);
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.home-panel {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px;
+  border-radius: 12px;
+  border: 1px solid rgba(100, 255, 218, 0.1);
+  background: var(--light-navy);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+.home-panel__header {
+  margin-bottom: 24px;
+}
+
+.home-panel__header h2 {
+  margin-bottom: 10px;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.home-panel__header p {
+  color: var(--slate);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.home-form {
+  display: grid;
+  gap: 16px;
+}
+
+.home-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.home-info-card {
+  background-color: var(--navy);
+  border-radius: 8px;
+  border: 1px solid rgba(100, 255, 218, 0.1);
+  padding: 24px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.home-info-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.home-info-card__tag {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--cyan);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.home-info-card h3 {
+  color: var(--white);
+  margin-bottom: 10px;
+  font-size: 1.55rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.home-info-card p {
+  color: var(--slate);
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .home-panel {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-container {
+    padding: 12px;
+  }
+
+  .section {
+    padding: 32px 0;
+  }
+}
