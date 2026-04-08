@@ -18,6 +18,22 @@ function Navbar() {
           >
             Home
           </NavLink>
+          <NavLink
+            className={({ isActive }) =>
+              `navbar__link${isActive ? ' navbar__link--active' : ''}`
+            }
+            to="/explorar"
+          >
+            Explorar
+          </NavLink>
+          <NavLink
+            className={({ isActive }) =>
+              `navbar__link${isActive ? ' navbar__link--active' : ''}`
+            }
+            to="/comunidade"
+          >
+            Comunidade
+          </NavLink>
         </nav>
 
         <div className="navbar__tools">
@@ -28,6 +44,9 @@ function Navbar() {
               type="text"
             />
           </div>
+          <NavLink className="navbar__link" to="/login">
+            Entrar
+          </NavLink>
         </div>
       </div>
     </header>
