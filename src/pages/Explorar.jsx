@@ -8,21 +8,30 @@ const Explorar = () => {
   const [filtro, setFiltro] = useState('Todos');
   const [busca, setBusca] = useState('');
 
+  const categorias = ['Todos', 'Clássicos', 'Fantasia', 'Romance', 'Distopia', 'Psicológico', 'Sci-Fi'];
+
   const livrosFiltrados = biblioteca.filter(livro => {
-    const matchCategoria = filtro === 'Todos' || livro.categoria === filtro || (filtro === 'Sci-Fi' && livro.categoria === 'Ficção Científica');
-    const matchBusca = livro.titulo.toLowerCase().includes(busca.toLowerCase()) ||
+    // Lógica funcional de filtro por categoria
+    const matchCategoria = 
+      filtro === 'Todos' || 
+      livro.categoria === filtro || 
+      (filtro === 'Sci-Fi' && livro.categoria === 'Ficção Científica');
+
+    // Lógica funcional de busca por texto
+    const matchBusca = 
+      livro.titulo.toLowerCase().includes(busca.toLowerCase()) ||
       livro.autor.toLowerCase().includes(busca.toLowerCase());
+
     return matchCategoria && matchBusca;
   });
 
-  const categorias = ['Todos', 'Clássicos', 'Fantasia', 'Romance', 'Distopia', 'Psicológico', 'Sci-Fi'];
   const destaques = biblioteca.slice(0, 4);
 
   return (
     <div className="explorar">
       <section className="explorar__hero">
         <h1 className="explorar__title">Expanda seus Horizontes Literários</h1>
-        <p className="explorar__subtitle">Mergulhe em milhares de histórias e clássicos atemporais.</p>
+        <p className="explorar__subtitle">Mergulhe em histórias e clássicos atemporais.</p>
         
         <div className="explorar__search">
           <Input
@@ -43,7 +52,7 @@ const Explorar = () => {
               <li key={cat}>
                 <button
                   className={`explorar__cat-btn ${filtro === cat ? 'explorar__cat-btn--active' : ''}`}
-                  onClick={() => setFiltro(cat)}
+                  onClick={() => setFiltro(cat)} // Altera o estado e dispara o re-render com o novo filtro
                 >
                   {cat}
                 </button>
@@ -54,9 +63,10 @@ const Explorar = () => {
 
         <div className="explorar__content">
           <section className="explorar__section">
-            <h2>Em Destaque</h2>
+            <h2>{filtro === 'Todos' ? 'Em Destaque' : `Resultados para ${filtro}`}</h2>
             <div className="explorar__destaques-grid">
-              {destaques.map(livro => (
+              {/* Mostra destaques apenas quando não há filtro ativo, ou mostra os filtrados */}
+              {(filtro === 'Todos' && busca === '' ? destaques : livrosFiltrados.slice(0, 4)).map(livro => (
                 <div key={livro.id} className="destaque-card">
                   <img src={livro.capa} alt={livro.titulo} />
                   <div className="destaque-card__info">
@@ -73,11 +83,15 @@ const Explorar = () => {
           <section className="explorar__section">
             <h2>Acervo</h2>
             <div className="explorar__acervo-grid">
-              {livrosFiltrados.map(livro => (
-                <Link to={`/livro/${livro.id}`} key={livro.id} className="acervo-card">
-                  <img src={livro.capa} alt={livro.titulo} />
-                </Link>
-              ))}
+              {livrosFiltrados.length > 0 ? (
+                livrosFiltrados.map(livro => (
+                  <Link to={`/livro/${livro.id}`} key={livro.id} className="acervo-card">
+                    <img src={livro.capa} alt={livro.titulo} />
+                  </Link>
+                ))
+              ) : (
+                <p className="explorar__empty">Nenhum livro encontrado nesta categoria.</p>
+              )}
             </div>
           </section>
         </div>
