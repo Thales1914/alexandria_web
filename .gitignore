@@ -16,6 +16,10 @@ frontend/*.local
 backend/target/
 backend/.idea/
 backend/.backend-run.log
+backend/.env
+backend/.mvn/
+backend/.m2/
+backend/src/main/resources/application-local.properties
 
 # Editors
 .vscode/
