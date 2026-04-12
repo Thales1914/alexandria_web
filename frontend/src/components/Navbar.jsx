@@ -1,9 +1,9 @@
-﻿import { NavLink } from 'react-router-dom';
-import '../styles/components/Navbar.css';
+﻿import { NavLink } from "react-router-dom";
+import "../styles/components/Navbar.css";
 
 function Navbar() {
   const getLinkClassName = ({ isActive }) =>
-    `navbar__link${isActive ? ' navbar__link--active' : ''}`;
+    `navbar__link${isActive ? " navbar__link--active" : ""}`;
 
   return (
     <header className="navbar">
@@ -21,6 +21,15 @@ function Navbar() {
           </NavLink>
           <NavLink className={getLinkClassName} to="/comunidade">
             Comunidade
+          </NavLink>
+        </nav>
+
+        <nav className="navbar__auth" aria-label="Autenticação">
+          <NavLink className="navbar__auth-link" to="/login">
+            Entrar
+          </NavLink>
+          <NavLink className="navbar__auth-btn" to="/cadastro">
+            Cadastrar
           </NavLink>
         </nav>
       </div>

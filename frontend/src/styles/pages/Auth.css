@@ -1,0 +1,130 @@
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 64px);
+  padding: 20px;
+}
+
+.auth-card {
+  background-color: var(--navy, #112240);
+  border: 1px solid rgba(100, 255, 218, 0.1);
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.auth-header h1 {
+  color: var(--cyan, #64ffda);
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+
+.auth-header p {
+  color: var(--slate, #8892b0);
+  font-size: 0.9rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.auth-action {
+  margin-top: 10px;
+}
+
+.auth-footer {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--slate, #8892b0);
+}
+
+.auth-footer a {
+  color: var(--cyan, #64ffda);
+  cursor: pointer;
+  font-weight: 500;
+  margin-left: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.auth-footer a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* ─── Password Strength Bar ─── */
+
+.password-field-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.password-strength__track {
+  flex: 1;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.password-strength__bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.35s ease, background-color 0.35s ease;
+}
+
+.password-strength__bar--weak {
+  background: #ff7b72;
+}
+
+.password-strength__bar--medium {
+  background: #f0c75e;
+}
+
+.password-strength__bar--strong {
+  background: #64ffda;
+}
+
+.password-strength__bar--very-strong {
+  background: #56d364;
+}
+
+.password-strength__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.password-strength__label--weak {
+  color: #ff7b72;
+}
+
+.password-strength__label--medium {
+  color: #f0c75e;
+}
+
+.password-strength__label--strong {
+  color: #64ffda;
+}
+
+.password-strength__label--very-strong {
+  color: #56d364;
+}

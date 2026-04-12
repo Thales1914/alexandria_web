@@ -47,6 +47,38 @@
   color: var(--cyan);
 }
 
+.navbar__auth {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar__auth-link {
+  color: var(--light-slate);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.25s ease;
+}
+
+.navbar__auth-link:hover {
+  color: var(--cyan);
+}
+
+.navbar__auth-btn {
+  background-color: var(--cyan);
+  color: var(--bg);
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.25s ease;
+}
+
+.navbar__auth-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
 @media (max-width: 768px) {
   .navbar {
     height: auto;
@@ -60,6 +92,12 @@
 
   .navbar__nav {
     gap: 18px;
+  }
+
+  .navbar__auth {
+    width: 100%;
+    justify-content: center;
+    margin-top: 12px;
   }
 }
 
