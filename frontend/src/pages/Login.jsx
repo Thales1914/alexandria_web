@@ -1,15 +1,19 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import Input from "../components/Input";
 import Button from "../components/Button";
+import AlertMessage from "../components/AlertMessage";
 import "../styles/pages/Auth.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
+  const [sucesso, setSucesso] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -31,12 +35,12 @@ const Login = () => {
 
       const data = await response.json();
       
-      // Salvar token e dados do usuário
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("userEmail", data.email);
-      localStorage.setItem("userName", data.name);
+      login(data);
+      setSucesso(true);
 
-      navigate("/explorar");
+      setTimeout(() => {
+        navigate("/explorar");
+      }, 1500);
     } catch (err) {
       setErro(err.message);
     } finally {
@@ -46,6 +50,13 @@ const Login = () => {
 
   return (
     <div className="auth-page">
+      {sucesso && (
+        <AlertMessage
+          type="success"
+          title="Bem-vindo(a) de volta!"
+          message="Login realizado com sucesso. Redirecionando..."
+        />
+      )}
       <div className="auth-card">
         <header className="auth-header">
           <h1>Alexandria</h1>
@@ -87,7 +98,15 @@ const Login = () => {
         </form>
 
         <footer className="auth-footer">
-          <p>Não possui Conta? <span onClick={() => navigate("/cadastro")}>Cadastrar</span></p>
+          <p>
+            Não possui Conta?{" "}
+            <span
+              className="auth-footer__link"
+              onClick={() => navigate("/cadastro")}
+            >
+              Cadastrar
+            </span>
+          </p>
         </footer>
       </div>
     </div>

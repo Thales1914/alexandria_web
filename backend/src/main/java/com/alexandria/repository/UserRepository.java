@@ -1,4 +1,4 @@
-﻿package com.alexandria.repository;
+package com.alexandria.repository;
 
 import com.alexandria.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,0 +1,104 @@
+.profile-page {
+  min-height: calc(100vh - 160px);
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.profile-card {
+  width: min(550px, 100%);
+  background: rgba(17, 34, 64, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(100, 255, 218, 0.1);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.profile-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.profile-avatar-large {
+  width: 100px;
+  height: 100px;
+  background: var(--navy);
+  border: 3px solid var(--cyan);
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cyan);
+}
+
+.profile-header h1 {
+  font-size: 1.8rem;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+
+.profile-header p {
+  color: var(--slate);
+  font-size: 0.95rem;
+}
+
+.profile-info {
+  display: grid;
+  gap: 24px;
+}
+
+.profile-field {
+  display: grid;
+  gap: 8px;
+}
+
+.profile-field label {
+  color: var(--cyan);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+
+.profile-field-value {
+  background: rgba(10, 25, 47, 0.5);
+  padding: 14px 18px;
+  border-radius: 10px;
+  color: var(--light-slate);
+  font-size: 1.05rem;
+  border: 1px solid rgba(100, 255, 218, 0.05);
+}
+
+.profile-footer {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(100, 255, 218, 0.1);
+  display: flex;
+  justify-content: center;
+}
+
+.profile-logout-btn {
+  background: transparent;
+  color: #ff7b72;
+  border: 1px solid rgba(255, 123, 114, 0.3);
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-logout-btn:hover {
+  background: rgba(255, 123, 114, 0.1);
+  border-color: #ff7b72;
+}

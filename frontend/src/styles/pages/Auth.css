@@ -49,6 +49,19 @@
   color: var(--slate, #8892b0);
 }
 
+.auth-footer__link {
+  color: #61ffda;
+  cursor: pointer;
+  font-weight: 600;
+  margin-left: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.auth-footer__link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
 .auth-footer a {
   color: var(--cyan, #64ffda);
   cursor: pointer;

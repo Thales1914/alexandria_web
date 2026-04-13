@@ -1,7 +1,13 @@
-﻿import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "../styles/components/Navbar.css";
 
 function Navbar() {
+  const { isLoggedIn, logout, user } = useAuth();
+  const location = useLocation();
+
+  const isAuthPage = location.pathname === "/login" || location.pathname === "/cadastro";
+
   const getLinkClassName = ({ isActive }) =>
     `navbar__link${isActive ? " navbar__link--active" : ""}`;
 
@@ -24,14 +30,37 @@ function Navbar() {
           </NavLink>
         </nav>
 
-        <nav className="navbar__auth" aria-label="Autenticação">
-          <NavLink className="navbar__auth-link" to="/login">
-            Entrar
-          </NavLink>
-          <NavLink className="navbar__auth-btn" to="/cadastro">
-            Cadastrar
-          </NavLink>
-        </nav>
+        {!isAuthPage && (
+          <nav className="navbar__auth" aria-label="Autenticação">
+            {isLoggedIn ? (
+              <NavLink className="navbar__avatar" to="/perfil" title="Meu Perfil">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </NavLink>
+            ) : (
+              <>
+                <NavLink className="navbar__auth-link" to="/login">
+                  Entrar
+                </NavLink>
+                <NavLink className="navbar__auth-btn" to="/cadastro">
+                  Cadastrar
+                </NavLink>
+              </>
+            )}
+          </nav>
+        )}
       </div>
     </header>
   );

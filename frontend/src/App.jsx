@@ -1,20 +1,26 @@
-﻿import { BrowserRouter } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
 import AppRoutes from './routes/AppRoutes';
+import { AuthProvider } from './context/AuthContext';
 import './styles/app.css';
 
 function App() {
+  const location = useLocation();
+  const hideFooter = location.pathname === '/login' || 
+                      location.pathname === '/cadastro' || 
+                      location.pathname === '/perfil';
+
   return (
-    <BrowserRouter>
+    <AuthProvider>
       <div className="app-shell">
         <Navbar />
         <main className="app-main">
           <AppRoutes />
         </main>
-        <Footer />
+        {!hideFooter && <Footer />}
       </div>
-    </BrowserRouter>
+    </AuthProvider>
   );
 }
 

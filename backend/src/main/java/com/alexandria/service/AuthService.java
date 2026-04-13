@@ -10,6 +10,7 @@ import com.alexandria.model.User;
 import com.alexandria.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthService {
@@ -24,6 +25,7 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
+    @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new EmailAlreadyExistsException("Este email já está em uso");
@@ -35,7 +37,8 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEnabled(true);
 
-        userRepository.save(user);
+        user = userRepository.save(user);
+        System.out.println("Usuário cadastrado com sucesso. ID gerado: " + user.getId());
 
         String token = jwtUtil.generateToken(user);
         return new AuthResponse(token, user.getEmail(), user.getName());

@@ -1,0 +1,12 @@
+{
+  "name": "alexandria_web",
+  "private": true,
+  "scripts": {
+    "install": "npm --prefix frontend install",
+    "predev": "npm --prefix frontend install",
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "lint": "npm --prefix frontend run lint",
+    "preview": "npm --prefix frontend run preview"
+  }
+}

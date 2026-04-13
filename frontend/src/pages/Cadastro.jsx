@@ -141,14 +141,8 @@ const Cadastro = () => {
         return;
       }
 
-      const data = await response.json();
-
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('userEmail', data.email);
-      localStorage.setItem('userName', data.name);
-
       setSucesso(true);
-      setTimeout(() => navigate('/explorar'), 1500);
+      setTimeout(() => navigate('/login'), 2000);
     } catch {
       setErroGeral('Não foi possível conectar ao servidor. Tente novamente mais tarde.');
     } finally {
@@ -158,6 +152,14 @@ const Cadastro = () => {
 
   return (
     <div className="auth-page">
+      {sucesso && (
+        <AlertMessage
+          type="success"
+          title="Conta criada com sucesso!"
+          message="Agora você pode fazer o login para acessar sua biblioteca."
+        />
+      )}
+
       <div className="auth-card">
         <header className="auth-header">
           <h1>Alexandria</h1>
