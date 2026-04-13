@@ -1,7 +1,16 @@
-﻿import { NavLink } from "react-router-dom";
+﻿import { NavLink, useNavigate } from 'react-router-dom';
 import "../styles/components/Navbar.css";
+import Button from './Button';
 
 function Navbar() {
+
+  const navigate = useNavigate();
+  const isAuthenticated = !!localStorage.getItem('token');
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   const getLinkClassName = ({ isActive }) =>
     `navbar__link${isActive ? " navbar__link--active" : ""}`;
 
@@ -23,7 +32,13 @@ function Navbar() {
             Comunidade
           </NavLink>
         </nav>
-
+        {isAuthenticated ? (
+          <div className="navbar__actions">
+          <Button onClick={handleLogout} variant="primary">
+            Sair
+          </Button>
+        </div>
+        ) : (
         <nav className="navbar__auth" aria-label="Autenticação">
           <NavLink className="navbar__auth-link" to="/login">
             Entrar
@@ -32,6 +47,7 @@ function Navbar() {
             Cadastrar
           </NavLink>
         </nav>
+        )}
       </div>
     </header>
   );
