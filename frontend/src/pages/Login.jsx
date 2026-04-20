@@ -6,6 +6,7 @@ import Button from "../components/Button";
 import AlertMessage from "../components/AlertMessage";
 import "../styles/pages/Auth.css";
 
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
