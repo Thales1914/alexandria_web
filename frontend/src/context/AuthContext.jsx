@@ -31,10 +31,15 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const updateUser = (newName) => {
+    localStorage.setItem('userName', newName);
+    setUser(prev => ({ ...prev, name: newName }));
+  };
+
   const isLoggedIn = !!token;
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isLoggedIn, loading }}>
+    <AuthContext.Provider value={{ user, token, login, logout, updateUser, isLoggedIn, loading }}>
       {children}
     </AuthContext.Provider>
   );
