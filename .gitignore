@@ -24,3 +24,4 @@ backend/src/main/resources/application-local.properties
 # Editors
 .vscode/
 .idea/
+senha.txt
