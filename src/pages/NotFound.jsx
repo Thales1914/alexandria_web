@@ -20,6 +20,9 @@ function NotFound() {
       </div>
     </section>
   );
-}
+} 
+<div>
+    <h1>404 - Página Não Encontrada</h1>
+</div>
 
 export default NotFound;
