@@ -1,8 +1,10 @@
-import { useState, useCallback } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import Input from '../components/Input';
-import Button from '../components/Button';
+import { useCallback, useState } from 'react';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import AlertMessage from '../components/AlertMessage';
+import Button from '../components/Button';
+import Input from '../components/Input';
+import { apiRequest } from '../services/api';
 import '../styles/pages/Auth.css';
 
 const PASSWORD_RULES = {
@@ -12,24 +14,32 @@ const PASSWORD_RULES = {
 };
 
 function getPasswordStrength(password) {
-  if (!password) return { level: 0, label: '' };
+  if (!password) {
+    return { level: 0, label: '' };
+  }
 
   let score = 0;
+
   if (password.length >= PASSWORD_RULES.minLength) score++;
   if (PASSWORD_RULES.hasUppercase.test(password)) score++;
   if (PASSWORD_RULES.hasNumber.test(password)) score++;
   if (password.length >= 12) score++;
 
   if (score <= 1) return { level: 1, label: 'Fraca', className: 'weak' };
-  if (score === 2) return { level: 2, label: 'Média', className: 'medium' };
+  if (score === 2) return { level: 2, label: 'Media', className: 'medium' };
   if (score === 3) return { level: 3, label: 'Forte', className: 'strong' };
   return { level: 4, label: 'Muito forte', className: 'very-strong' };
 }
 
 function validateEmail(email) {
   if (!email) return '';
+
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) return 'Formato de email inválido';
+
+  if (!emailRegex.test(email)) {
+    return 'Formato de email invalido';
+  }
+
   return '';
 }
 
@@ -44,12 +54,20 @@ const Cadastro = () => {
   const [touched, setTouched] = useState({});
   const [serverErrors, setServerErrors] = useState({});
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isLoggedIn, login } = useAuth();
+  const fromLocation = location.state?.from;
+  const redirectTo =
+    fromLocation?.pathname &&
+    fromLocation.pathname !== '/login' &&
+    fromLocation.pathname !== '/cadastro'
+      ? `${fromLocation.pathname}${fromLocation.search || ''}`
+      : '/explorar';
 
   const handleBlur = useCallback((field) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
   }, []);
 
-  // --- Field-level validation ---
   const getFieldError = useCallback(
     (field) => {
       if (serverErrors[field]) return serverErrors[field];
@@ -57,24 +75,26 @@ const Cadastro = () => {
 
       switch (field) {
         case 'name':
-          if (!nome) return 'O nome é obrigatório';
-          if (nome.length < 2) return 'O nome deve ter no mínimo 2 caracteres';
-          if (nome.length > 120) return 'O nome deve ter no máximo 120 caracteres';
+          if (!nome) return 'O nome e obrigatorio';
+          if (nome.length < 2) return 'O nome deve ter no minimo 2 caracteres';
+          if (nome.length > 120) return 'O nome deve ter no maximo 120 caracteres';
           return '';
         case 'email':
-          if (!email) return 'O email é obrigatório';
+          if (!email) return 'O email e obrigatorio';
           return validateEmail(email);
         case 'password':
-          if (!senha) return 'A senha é obrigatória';
-          if (senha.length < 8) return 'A senha deve ter no mínimo 8 caracteres';
-          if (!PASSWORD_RULES.hasUppercase.test(senha))
-            return 'A senha deve conter ao menos uma letra maiúscula';
-          if (!PASSWORD_RULES.hasNumber.test(senha))
-            return 'A senha deve conter ao menos um número';
+          if (!senha) return 'A senha e obrigatoria';
+          if (senha.length < 8) return 'A senha deve ter no minimo 8 caracteres';
+          if (!PASSWORD_RULES.hasUppercase.test(senha)) {
+            return 'A senha deve conter ao menos uma letra maiuscula';
+          }
+          if (!PASSWORD_RULES.hasNumber.test(senha)) {
+            return 'A senha deve conter ao menos um numero';
+          }
           return '';
         case 'confirmPassword':
           if (!confirmaSenha) return 'Confirme sua senha';
-          if (senha !== confirmaSenha) return 'As senhas não coincidem';
+          if (senha !== confirmaSenha) return 'As senhas nao coincidem';
           return '';
         default:
           return '';
@@ -107,11 +127,18 @@ const Cadastro = () => {
 
   const passwordStrength = getPasswordStrength(senha);
 
-  const handleCadastro = async (e) => {
-    e.preventDefault();
+  if (isLoggedIn) {
+    return <Navigate to={redirectTo} replace />;
+  }
 
-    // Touch all fields to show any remaining errors
-    setTouched({ name: true, email: true, password: true, confirmPassword: true });
+  const handleCadastro = async (event) => {
+    event.preventDefault();
+    setTouched({
+      name: true,
+      email: true,
+      password: true,
+      confirmPassword: true,
+    });
 
     if (!isFormValid()) {
       return;
@@ -122,29 +149,23 @@ const Cadastro = () => {
     setCarregando(true);
 
     try {
-      const response = await fetch('http://localhost:8080/api/auth/register', {
+      const data = await apiRequest('/api/auth/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: nome, email, password: senha }),
+        body: { name: nome, email, password: senha },
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
+      login(data);
+      setSucesso(true);
 
-        if (errorData?.errors) {
-          setServerErrors(errorData.errors);
-        }
-
-        setErroGeral(errorData?.message || 'Erro ao cadastrar. Tente novamente.');
-        return;
+      window.setTimeout(() => {
+        navigate(redirectTo, { replace: true });
+      }, 800);
+    } catch (err) {
+      if (err.data?.errors) {
+        setServerErrors(err.data.errors);
       }
 
-      setSucesso(true);
-      setTimeout(() => navigate('/login'), 2000);
-    } catch {
-      setErroGeral('Não foi possível conectar ao servidor. Tente novamente mais tarde.');
+      setErroGeral(err.message || 'Erro ao cadastrar. Tente novamente.');
     } finally {
       setCarregando(false);
     }
@@ -152,25 +173,17 @@ const Cadastro = () => {
 
   return (
     <div className="auth-page">
-      {sucesso && (
-        <AlertMessage
-          type="success"
-          title="Conta criada com sucesso!"
-          message="Agora você pode fazer o login para acessar sua biblioteca."
-        />
-      )}
-
       <div className="auth-card">
         <header className="auth-header">
           <h1>Alexandria</h1>
-          <p>Criação de Conta</p>
+          <p>Criacao de conta</p>
         </header>
 
         {sucesso && (
           <AlertMessage
             type="success"
             title="Conta criada com sucesso!"
-            message="Redirecionando..."
+            message="Voce ja esta autenticado. Redirecionando..."
           />
         )}
 
@@ -178,55 +191,67 @@ const Cadastro = () => {
           <AlertMessage type="error" title="Erro" message={erroGeral} />
         )}
 
-        <form onSubmit={handleCadastro} className="auth-form" noValidate>
+        <form
+          onSubmit={handleCadastro}
+          className="auth-form"
+          autoComplete="off"
+          noValidate
+        >
           <Input
-            id="nome"
-            label="Nome Completo"
+            id="alexandria-signup-name"
+            label="Nome completo"
+            name="alexandria-signup-name"
             type="text"
             placeholder="Seu nome"
             value={nome}
-            onChange={(e) => {
-              setNome(e.target.value);
+            onChange={(event) => {
+              setNome(event.target.value);
               setServerErrors((prev) => ({ ...prev, name: undefined }));
             }}
             onBlur={() => handleBlur('name')}
             state={getFieldState('name')}
             stateMessage={getFieldError('name')}
+            autoComplete="off"
             required
           />
 
           <Input
-            id="email"
+            id="alexandria-signup-email"
             label="Email"
+            name="alexandria-signup-email"
             type="email"
             placeholder="seu@email.com"
             value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
+            onChange={(event) => {
+              setEmail(event.target.value);
               setServerErrors((prev) => ({ ...prev, email: undefined }));
             }}
             onBlur={() => handleBlur('email')}
             state={getFieldState('email')}
             stateMessage={getFieldError('email')}
+            autoComplete="off"
             required
           />
 
           <div className="password-field-wrapper">
             <Input
-              id="senha"
+              id="alexandria-signup-password"
               label="Senha"
+              name="alexandria-signup-password"
               type="password"
-              placeholder="••••••••"
+              placeholder="********"
               value={senha}
-              onChange={(e) => {
-                setSenha(e.target.value);
+              onChange={(event) => {
+                setSenha(event.target.value);
                 setServerErrors((prev) => ({ ...prev, password: undefined }));
               }}
               onBlur={() => handleBlur('password')}
               state={getFieldState('password')}
               stateMessage={getFieldError('password')}
+              autoComplete="new-password"
               required
             />
+
             {senha && (
               <div className="password-strength">
                 <div className="password-strength__track">
@@ -245,15 +270,17 @@ const Cadastro = () => {
           </div>
 
           <Input
-            id="confirmaSenha"
-            label="Confirmar Senha"
+            id="alexandria-signup-confirm-password"
+            label="Confirmar senha"
+            name="alexandria-signup-confirm-password"
             type="password"
-            placeholder="••••••••"
+            placeholder="********"
             value={confirmaSenha}
-            onChange={(e) => setConfirmaSenha(e.target.value)}
+            onChange={(event) => setConfirmaSenha(event.target.value)}
             onBlur={() => handleBlur('confirmPassword')}
             state={getFieldState('confirmPassword')}
             stateMessage={getFieldError('confirmPassword')}
+            autoComplete="new-password"
             required
           />
 
@@ -264,14 +291,14 @@ const Cadastro = () => {
               fullWidth
               disabled={carregando || sucesso}
             >
-              {carregando ? 'Cadastrando...' : sucesso ? 'Conta criada ✓' : 'Cadastrar'}
+              {carregando ? 'Cadastrando...' : sucesso ? 'Conta criada' : 'Cadastrar'}
             </Button>
           </div>
         </form>
 
         <footer className="auth-footer">
           <p>
-            Já possui uma conta? <Link to="/login">Entrar</Link>
+            Ja possui uma conta? <Link to="/login">Entrar</Link>
           </p>
         </footer>
       </div>

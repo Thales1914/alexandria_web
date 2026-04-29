@@ -1,61 +1,99 @@
-import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import "../styles/pages/Profile.css";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import AlertMessage from '../components/AlertMessage';
+import Button from '../components/Button';
+import { apiRequest } from '../services/api';
+import '../styles/pages/Profile.css';
+
+const PROFILE_FIELDS = [
+  { label: 'Nome completo', key: 'name' },
+  { label: 'Email de acesso', key: 'email' },
+];
 
 const Perfil = () => {
-  const { user, logout, isLoggedIn } = useAuth();
+  const { token, user, logout } = useAuth();
   const navigate = useNavigate();
+  const [profile, setProfile] = useState(user);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const avatarInitial = (profile?.name?.trim() || profile?.email?.trim() || '?')
+    .charAt(0)
+    .toUpperCase();
 
-  if (!isLoggedIn) {
-    navigate("/login");
-    return null;
-  }
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadProfile = async () => {
+      try {
+        const response = await apiRequest('/api/auth/profile', { token });
+        if (isMounted) {
+          setProfile(response);
+          setError('');
+        }
+      } catch {
+        if (isMounted) {
+          setProfile(user);
+          setError('Nao foi possivel sincronizar o perfil agora. Exibindo os dados da sessao local.');
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadProfile();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [token, user]);
 
   return (
     <div className="profile-page">
       <div className="profile-card">
         <header className="profile-header">
           <div className="profile-avatar-large">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="48"
-              height="48"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
+            <span>{avatarInitial}</span>
           </div>
-          <h1>Meu Perfil</h1>
-          <p>Informações básicas da sua conta</p>
+          <h1>Meu perfil</h1>
+          <p>Visualize os dados da conta e avance para a edicao quando precisar.</p>
         </header>
 
+        {error && <AlertMessage type="error" title="Sincronizacao parcial" message={error} />}
+
         <div className="profile-info">
-          <div className="profile-field">
-            <label>Nome Completo</label>
-            <div className="profile-field-value">{user?.name}</div>
-          </div>
+          {PROFILE_FIELDS.map((field) => (
+            <div key={field.key} className="profile-field">
+              <label>{field.label}</label>
+              <div className="profile-field-value">
+                {loading ? 'Carregando...' : profile?.[field.key] || 'Nao informado'}
+              </div>
+            </div>
+          ))}
 
           <div className="profile-field">
-            <label>Email de Acesso</label>
-            <div className="profile-field-value">{user?.email}</div>
-          </div>
-
-          <div className="profile-field">
-            <label>Senha</label>
-            <div className="profile-field-value">••••••••</div>
+            <label>Status da conta</label>
+            <div className="profile-field-value">Conta ativa</div>
           </div>
         </div>
 
         <footer className="profile-footer">
-          <button className="profile-logout-btn" onClick={() => { logout(); navigate("/"); }}>
-            Sair da Conta
-          </button>
+          <div className="profile-actions">
+            <Button variant="secondary" onClick={() => navigate('/perfil/editar')}>
+              Editar perfil
+            </Button>
+            <button
+              className="profile-logout-btn"
+              onClick={() => {
+                logout();
+                navigate('/login');
+              }}
+            >
+              Sair da conta
+            </button>
+          </div>
         </footer>
       </div>
     </div>

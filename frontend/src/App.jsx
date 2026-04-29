@@ -1,15 +1,20 @@
 import { useLocation } from 'react-router-dom';
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
-import AppRoutes from './routes/AppRoutes';
 import { AuthProvider } from './context/AuthContext';
+import AppRoutes from './routes/AppRoutes';
 import './styles/app.css';
+
+const AUTH_PAGES = new Set([
+  '/login',
+  '/cadastro',
+  '/esqueci-senha',
+  '/redefinir-senha',
+]);
 
 function App() {
   const location = useLocation();
-  const hideFooter = location.pathname === '/login' || 
-                      location.pathname === '/cadastro' || 
-                      location.pathname === '/perfil';
+  const hideFooter = AUTH_PAGES.has(location.pathname);
 
   return (
     <AuthProvider>

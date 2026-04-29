@@ -1,16 +1,42 @@
-# React + Vite
+# Alexandria Frontend (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicacao frontend do projeto Alexandria.
 
-Currently, two official plugins are available:
+## Configuracao de ambiente
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Crie o arquivo `frontend/.env.local`.
+2. Copie o conteudo de `frontend/.env.example`.
+3. Preencha a chave da Google Books API em `VITE_GOOGLE_BOOKS_API_KEY`.
 
-## React Compiler
+Exemplo:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```env
+VITE_API_URL=http://localhost:8080
+VITE_GOOGLE_BOOKS_URL=https://www.googleapis.com/books/v1/volumes
+VITE_GOOGLE_BOOKS_API_KEY=SUA_CHAVE_AQUI
+VITE_GOOGLE_BOOKS_LANG=pt
+VITE_GOOGLE_BOOKS_COUNTRY=BR
+```
 
-## Expanding the ESLint configuration
+## Onde colocar a chave
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+A chave deve ficar no arquivo:
+
+`frontend/.env.local`
+
+Use a variavel:
+
+`VITE_GOOGLE_BOOKS_API_KEY=...`
+
+## Rodando o projeto
+
+```bash
+npm install
+npm run dev
+```
+
+Build de producao:
+
+```bash
+npm run build
+```

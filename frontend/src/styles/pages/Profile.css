@@ -19,8 +19,15 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .profile-header {
@@ -39,6 +46,8 @@
   align-items: center;
   justify-content: center;
   color: var(--cyan);
+  font-size: 2rem;
+  font-weight: 700;
 }
 
 .profile-header h1 {
@@ -50,9 +59,11 @@
 .profile-header p {
   color: var(--slate);
   font-size: 0.95rem;
+  line-height: 1.7;
 }
 
-.profile-info {
+.profile-info,
+.profile-edit-form {
   display: grid;
   gap: 24px;
 }
@@ -87,6 +98,14 @@
   justify-content: center;
 }
 
+.profile-actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
 .profile-logout-btn {
   background: transparent;
   color: #ff7b72;
@@ -101,4 +120,19 @@
 .profile-logout-btn:hover {
   background: rgba(255, 123, 114, 0.1);
   border-color: #ff7b72;
+}
+
+@media (max-width: 640px) {
+  .profile-card {
+    padding: 28px 22px;
+  }
+
+  .profile-actions {
+    flex-direction: column;
+  }
+
+  .profile-actions .button,
+  .profile-logout-btn {
+    width: 100%;
+  }
 }

@@ -1,15 +1,32 @@
-import { NavLink, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import "../styles/components/Navbar.css";
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import Button from './Button';
+import '../styles/components/Navbar.css';
+
+const AUTH_PAGES = new Set([
+  '/login',
+  '/cadastro',
+  '/esqueci-senha',
+  '/redefinir-senha',
+]);
 
 function Navbar() {
   const { isLoggedIn, logout, user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+  const avatarInitial = (user?.name?.trim() || user?.email?.trim() || '?')
+    .charAt(0)
+    .toUpperCase();
 
-  const isAuthPage = location.pathname === "/login" || location.pathname === "/cadastro";
+  const isAuthPage = AUTH_PAGES.has(location.pathname);
 
   const getLinkClassName = ({ isActive }) =>
-    `navbar__link${isActive ? " navbar__link--active" : ""}`;
+    `navbar__link${isActive ? ' navbar__link--active' : ''}`;
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <header className="navbar">
@@ -28,27 +45,28 @@ function Navbar() {
           <NavLink className={getLinkClassName} to="/comunidade">
             Comunidade
           </NavLink>
+          <NavLink className={getLinkClassName} to="/biblioteca">
+            Biblioteca
+          </NavLink>
         </nav>
 
         {!isAuthPage && (
-          <nav className="navbar__auth" aria-label="Autenticação">
+          <nav className="navbar__auth" aria-label="Autenticacao">
             {isLoggedIn ? (
-              <NavLink className="navbar__avatar" to="/perfil" title="Meu Perfil">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="22"
-                  height="22"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+              <div className="navbar__actions">
+                <NavLink
+                  className={({ isActive }) =>
+                    `navbar__avatar${isActive ? ' navbar__avatar--active' : ''}`
+                  }
+                  to="/perfil"
+                  title="Meu perfil"
                 >
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-              </NavLink>
+                  <span>{avatarInitial}</span>
+                </NavLink>
+                <Button onClick={handleLogout} variant="secondary">
+                  Sair
+                </Button>
+              </div>
             ) : (
               <>
                 <NavLink className="navbar__auth-link" to="/login">

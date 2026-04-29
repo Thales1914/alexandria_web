@@ -1,53 +1,89 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const AuthContext = createContext();
 
+function getStoredAuth() {
+  const token = localStorage.getItem('token');
+  const name = localStorage.getItem('userName');
+  const email = localStorage.getItem('userEmail');
+  const userId = localStorage.getItem('userId');
+
+  return {
+    token,
+    user: token
+      ? {
+          id: userId ? Number(userId) : null,
+          name: name || '',
+          email: email || '',
+        }
+      : null,
+  };
+}
+
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
-  const [loading, setLoading] = useState(true);
+  const [authState, setAuthState] = useState(getStoredAuth);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedName = localStorage.getItem('userName');
-    const storedEmail = localStorage.getItem('userEmail');
+    const syncAuthState = () => {
+      setAuthState(getStoredAuth());
+    };
 
-    if (storedToken) {
-      setToken(storedToken);
-      setUser({ name: storedName, email: storedEmail });
-    }
-    setLoading(false);
+    window.addEventListener('storage', syncAuthState);
+    return () => window.removeEventListener('storage', syncAuthState);
   }, []);
 
   const login = (data) => {
     localStorage.setItem('token', data.token);
     localStorage.setItem('userName', data.name);
     localStorage.setItem('userEmail', data.email);
-    setToken(data.token);
-    setUser({ name: data.name, email: data.email });
+    localStorage.setItem('userId', String(data.userId || data.id || ''));
+
+    setAuthState({
+      token: data.token,
+      user: {
+        id: data.userId || data.id || null,
+        name: data.name,
+        email: data.email,
+      },
+    });
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userName');
     localStorage.removeItem('userEmail');
-    setToken(null);
-    setUser(null);
+    localStorage.removeItem('userId');
+
+    setAuthState({
+      token: null,
+      user: null,
+    });
   };
 
-  const isLoggedIn = !!token;
+  const isLoggedIn = !!authState.token;
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isLoggedIn, loading }}>
+    <AuthContext.Provider
+      value={{
+        user: authState.user,
+        token: authState.token,
+        login,
+        logout,
+        isLoggedIn,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
+
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
+
   return context;
 };

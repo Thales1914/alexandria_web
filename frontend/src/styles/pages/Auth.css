@@ -1,7 +1,9 @@
 .auth-page {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 18px;
   min-height: calc(100vh - 64px);
   padding: 20px;
 }
@@ -36,6 +38,22 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
+}
+
+.auth-helper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -6px;
+}
+
+.auth-helper a {
+  color: var(--cyan, #64ffda);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.auth-helper a:hover {
+  text-decoration: underline;
 }
 
 .auth-action {
@@ -75,7 +93,43 @@
   text-decoration: underline;
 }
 
-/* ─── Password Strength Bar ─── */
+.auth-footer--stacked {
+  display: grid;
+  gap: 8px;
+}
+
+.auth-demo-box {
+  margin-top: 22px;
+  padding: 18px;
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(100, 255, 218, 0.14);
+  border-radius: 14px;
+  background: rgba(10, 25, 47, 0.52);
+  color: var(--light-slate, #ccd6f6);
+}
+
+.auth-demo-box strong {
+  color: var(--white, #e6f1ff);
+}
+
+.auth-demo-box p {
+  color: var(--slate, #8892b0);
+  line-height: 1.6;
+}
+
+.auth-token {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(2, 12, 27, 0.8);
+  color: var(--cyan, #64ffda);
+  font-size: 0.84rem;
+  line-height: 1.6;
+  word-break: break-all;
+  border: 1px dashed rgba(100, 255, 218, 0.14);
+}
 
 .password-field-wrapper {
   display: flex;
@@ -140,4 +194,10 @@
 
 .password-strength__label--very-strong {
   color: #56d364;
+}
+
+@media (max-width: 640px) {
+  .auth-card {
+    padding: 28px 22px;
+  }
 }
