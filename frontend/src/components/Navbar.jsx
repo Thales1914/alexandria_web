@@ -31,8 +31,11 @@ function Navbar() {
   return (
     <header className="navbar">
       <div className="navbar__inner">
-        <NavLink className="navbar__brand" to="/">
-          Alexandria
+
+        {/* Marca e logo */}
+        <NavLink className="navbar__brand" to="/" aria-label="Alexandria — Página inicial">
+          <img src="/coruja.png" alt="" className="navbar__owl" />
+          <span>Alexandria</span>
         </NavLink>
 
         <nav className="navbar__nav" aria-label="Principal">
@@ -42,16 +45,23 @@ function Navbar() {
           <NavLink className={getLinkClassName} to="/explorar">
             Explorar
           </NavLink>
-          <NavLink className={getLinkClassName} to="/comunidade">
-            Comunidade
-          </NavLink>
-          <NavLink className={getLinkClassName} to="/biblioteca">
-            Biblioteca
-          </NavLink>
+          {isLoggedIn && (
+            <>
+              <NavLink className={getLinkClassName} to="/biblioteca">
+                Biblioteca
+              </NavLink>
+              <NavLink className={getLinkClassName} to="/comunidade">
+                Comunidade
+              </NavLink>
+              <NavLink className={getLinkClassName} to="/conquistas">
+                Conquistas
+              </NavLink>
+            </>
+          )}
         </nav>
 
         {!isAuthPage && (
-          <nav className="navbar__auth" aria-label="Autenticacao">
+          <nav className="navbar__auth" aria-label="Autenticação">
             {isLoggedIn ? (
               <div className="navbar__actions">
                 <NavLink

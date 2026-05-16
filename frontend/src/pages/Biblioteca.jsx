@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import AlertMessage from '../components/AlertMessage';
 import Button from '../components/Button';
 import { useAuth } from '../context/AuthContext';
+import { useGamificacao } from '../context/GamificacaoContext';
 import {
   STATUS_LEITURA,
   atualizarFavoritoBiblioteca,
@@ -21,6 +22,7 @@ const FILTERS = [
 
 function Biblioteca() {
   const { token, user } = useAuth();
+  const { ganharXP, registrarStats } = useGamificacao();
   const [items, setItems] = useState([]);
   const [filter, setFilter] = useState('TODOS');
   const [loading, setLoading] = useState(true);
@@ -28,13 +30,26 @@ function Biblioteca() {
   const [successMessage, setSuccessMessage] = useState('');
   const [updatingId, setUpdatingId] = useState(null);
 
+  // Sincroniza stats de gamificação quando os itens mudam
+  const syncStats = (currentItems) => {
+    registrarStats({
+      totalLivros: currentItems.length,
+      livrosLidos: currentItems.filter((i) => i.statusLeitura === 'LIDO').length,
+      favoritos: currentItems.filter((i) => i.favorito).length,
+      abandonados:currentItems.filter((i) => i.statusLeitura === 'ABANDONADO').length,
+      queroLer: currentItems.filter((i) => i.statusLeitura === 'QUERO_LER').length,
+      lendo: currentItems.filter((i) => i.statusLeitura === 'LENDO').length,
+      
+    });
+  };
+
   useEffect(() => {
     let cancelled = false;
 
     const loadLibrary = async () => {
       if (!user?.id) {
         setLoading(false);
-        setError('Nao foi possivel identificar o usuario autenticado.');
+        setError('Não foi possível identificar o usuário autenticado.');
         return;
       }
 
@@ -44,35 +59,26 @@ function Biblioteca() {
       try {
         const response = await listarBiblioteca(user.id, token);
         if (!cancelled) {
-          setItems(response || []);
+          const lista = response || [];
+          setItems(lista);
+          syncStats(lista);
         }
       } catch (err) {
         if (!cancelled) {
-          setError(err.message || 'Nao foi possivel carregar sua biblioteca.');
+          setError(err.message || 'Não foi possível carregar sua biblioteca.');
         }
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       }
     };
 
     loadLibrary();
-
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [token, user]);
 
   const filteredItems = useMemo(() => {
-    if (filter === 'TODOS') {
-      return items;
-    }
-
-    if (filter === 'FAVORITOS') {
-      return items.filter((item) => item.favorito);
-    }
-
+    if (filter === 'TODOS') return items;
+    if (filter === 'FAVORITOS') return items.filter((item) => item.favorito);
     return items.filter((item) => item.statusLeitura === filter);
   }, [filter, items]);
 
@@ -81,9 +87,7 @@ function Biblioteca() {
       (acc, item) => {
         acc.total += 1;
         acc[item.statusLeitura] = (acc[item.statusLeitura] || 0) + 1;
-        if (item.favorito) {
-          acc.favoritos += 1;
-        }
+        if (item.favorito) acc.favoritos += 1;
         return acc;
       },
       { total: 0, favoritos: 0 }
@@ -97,10 +101,17 @@ function Biblioteca() {
 
     try {
       const updated = await atualizarStatusBiblioteca(item.id, statusLeitura, token);
-      setItems((current) => current.map((entry) => (entry.id === item.id ? updated : entry)));
+      const novaLista = items.map((entry) => (entry.id === item.id ? updated : entry));
+      setItems(novaLista);
       setSuccessMessage('Status atualizado.');
+
+      // ── XP por status ──────────────────────────────────────────────────────
+      if (statusLeitura === 'LIDO') ganharXP('MARCAR_LIDO');
+      else if (statusLeitura === 'LENDO') ganharXP('MARCAR_LENDO');
+
+      syncStats(novaLista);
     } catch (err) {
-      setError(err.message || 'Nao foi possivel atualizar o status.');
+      setError(err.message || 'Não foi possível atualizar o status.');
     } finally {
       setUpdatingId(null);
     }
@@ -113,10 +124,16 @@ function Biblioteca() {
 
     try {
       const updated = await atualizarFavoritoBiblioteca(item.id, !item.favorito, token);
-      setItems((current) => current.map((entry) => (entry.id === item.id ? updated : entry)));
+      const novaLista = items.map((entry) => (entry.id === item.id ? updated : entry));
+      setItems(novaLista);
       setSuccessMessage(updated.favorito ? 'Livro favoritado.' : 'Livro removido dos favoritos.');
+
+      // ── XP ao favoritar ────────────────────────────────────────────────────
+      if (updated.favorito) ganharXP('FAVORITAR_LIVRO');
+
+      syncStats(novaLista);
     } catch (err) {
-      setError(err.message || 'Nao foi possivel atualizar o favorito.');
+      setError(err.message || 'Não foi possível atualizar o favorito.');
     } finally {
       setUpdatingId(null);
     }
@@ -130,7 +147,7 @@ function Biblioteca() {
           <h1>Sua estante de leitura</h1>
           <p>
             Organize livros salvos, acompanhe status e marque favoritos em uma
-            visao unica.
+            visão única.
           </p>
         </div>
 
@@ -195,9 +212,7 @@ function Biblioteca() {
                   disabled={updatingId === item.id}
                 >
                   {Object.entries(STATUS_LEITURA).map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
+                    <option key={value} value={value}>{label}</option>
                   ))}
                 </select>
 

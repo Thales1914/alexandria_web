@@ -1,0 +1,428 @@
+.conquistas {
+  width: min(1100px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 40px 0 64px;
+  display: grid;
+  gap: 24px;
+}
+
+/* ── Hero ──────────────────────────────────────────────────────────────────── */
+.conquistas__hero {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  padding: 40px 48px;
+  border: 1px solid rgba(100, 255, 218, 0.1);
+  border-radius: 28px;
+  background: linear-gradient(
+    135deg,
+    rgba(17, 34, 64, 0.92) 0%,
+    rgba(10, 25, 47, 0.96) 100%
+  );
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  position: relative;
+}
+
+.conquistas__hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 10% 50%,
+    rgba(100, 255, 218, 0.06) 0%,
+    transparent 55%
+  );
+  pointer-events: none;
+}
+
+.conquistas__owl-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  border-radius: 20px;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  z-index: 1;
+}
+
+.conquistas__owl-btn:hover {
+  transform: scale(1.06) translateY(-4px);
+}
+
+.conquistas__owl {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  mix-blend-mode: screen;
+  filter: brightness(1.18) saturate(1.1);
+  display: block;
+}
+
+.conquistas__hero-copy {
+  display: grid;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.conquistas__eyebrow {
+  color: var(--cyan);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.conquistas__hero-copy h1 {
+  color: var(--white);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 1.08;
+}
+
+.conquistas__hero-text {
+  color: var(--slate);
+  line-height: 1.7;
+  max-width: 560px;
+}
+
+.conquistas__hero-meta {
+  display: flex;
+  gap: 20px;
+  margin-top: 4px;
+}
+
+.conquistas__hero-meta span {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(100, 255, 218, 0.08);
+  color: var(--cyan);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+/* ── Nível ─────────────────────────────────────────────────────────────────── */
+.conquistas__level-card {
+  padding: 28px 32px;
+  border: 1px solid rgba(100, 255, 218, 0.1);
+  border-radius: 24px;
+  background: rgba(17, 34, 64, 0.8);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.15);
+}
+
+.conquistas__level-top {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 22px;
+}
+
+.conquistas__level-badge {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(100, 255, 218, 0.1);
+  border: 2px solid rgba(100, 255, 218, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 20px rgba(100, 255, 218, 0.12);
+}
+
+.conquistas__level-num {
+  color: var(--cyan);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.conquistas__level-info {
+  flex: 1;
+}
+
+.conquistas__level-eyebrow {
+  color: var(--slate);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.conquistas__level-name {
+  color: var(--white);
+  font-size: 1.6rem;
+  margin: 4px 0 6px;
+}
+
+.conquistas__level-next {
+  color: var(--slate);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.conquistas__level-next strong {
+  color: var(--cyan);
+}
+
+.conquistas__level-next em {
+  color: var(--light-slate);
+  font-style: normal;
+}
+
+.conquistas__xp-chip {
+  display: grid;
+  text-align: center;
+  padding: 12px 20px;
+  border-radius: 16px;
+  background: rgba(100, 255, 218, 0.06);
+  border: 1px solid rgba(100, 255, 218, 0.12);
+  flex-shrink: 0;
+}
+
+.conquistas__xp-chip strong {
+  color: var(--cyan);
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.conquistas__xp-chip span {
+  color: var(--slate);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.conquistas__bar-track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.conquistas__bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(100, 255, 218, 0.7), var(--cyan));
+  box-shadow: 0 0 12px rgba(100, 255, 218, 0.3);
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.conquistas__bar-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  color: var(--slate);
+  font-size: 0.78rem;
+}
+
+/* ── Seções ────────────────────────────────────────────────────────────────── */
+.conquistas__section {
+  display: grid;
+  gap: 16px;
+}
+
+.conquistas__section-title {
+  color: var(--white);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+/* ── Grid de conquistas ────────────────────────────────────────────────────── */
+.conquistas__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.conquistas__card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid rgba(100, 255, 218, 0.06);
+  border-radius: 18px;
+  background: rgba(17, 34, 64, 0.6);
+  position: relative;
+  opacity: 0.5;
+  filter: grayscale(0.4);
+  transition: opacity 0.2s ease, filter 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.conquistas__card--unlocked {
+  opacity: 1;
+  filter: none;
+  border-color: rgba(100, 255, 218, 0.16);
+  background: rgba(17, 34, 64, 0.82);
+}
+
+.conquistas__card--unlocked:hover {
+  transform: translateY(-3px);
+  border-color: rgba(100, 255, 218, 0.28);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+.conquistas__card-icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: rgba(100, 255, 218, 0.06);
+  font-size: 1.5rem;
+}
+
+.conquistas__lock {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  font-size: 0.7rem;
+}
+
+.conquistas__card-body {
+  flex: 1;
+  display: grid;
+  gap: 4px;
+}
+
+.conquistas__card-body h3 {
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.conquistas__card-body p {
+  color: var(--slate);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.conquistas__xp-badge {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(100, 255, 218, 0.08);
+  color: var(--cyan);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.conquistas__check {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  color: var(--cyan);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+/* ── Histórico ─────────────────────────────────────────────────────────────── */
+.conquistas__history {
+  border: 1px solid rgba(100, 255, 218, 0.08);
+  border-radius: 18px;
+  background: rgba(17, 34, 64, 0.6);
+  overflow: hidden;
+}
+
+.conquistas__history-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(100, 255, 218, 0.05);
+}
+
+.conquistas__history-row:last-child {
+  border-bottom: none;
+}
+
+.conquistas__history-xp {
+  color: var(--cyan);
+  font-weight: 800;
+  font-size: 0.9rem;
+  min-width: 60px;
+}
+
+.conquistas__history-label {
+  color: var(--light-slate);
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+.conquistas__history-date {
+  color: var(--slate);
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+/* ── Estado vazio ──────────────────────────────────────────────────────────── */
+.conquistas__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 48px;
+  border: 1px solid rgba(100, 255, 218, 0.08);
+  border-radius: 20px;
+  background: rgba(17, 34, 64, 0.5);
+  text-align: center;
+}
+
+.conquistas__empty-owl {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  mix-blend-mode: screen;
+  filter: brightness(1.1);
+  opacity: 0.6;
+}
+
+.conquistas__empty h3 {
+  color: var(--white);
+  font-size: 1.2rem;
+}
+
+.conquistas__empty p {
+  color: var(--slate);
+  max-width: 420px;
+  line-height: 1.7;
+}
+
+/* ── Responsivo ────────────────────────────────────────────────────────────── */
+@media (max-width: 760px) {
+  .conquistas__hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 32px 24px;
+    gap: 24px;
+  }
+
+  .conquistas__hero-meta {
+    justify-content: center;
+  }
+
+  .conquistas__level-top {
+    flex-wrap: wrap;
+  }
+
+  .conquistas__xp-chip {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .conquistas {
+    width: min(100%, calc(100% - 24px));
+  }
+
+  .conquistas__grid {
+    grid-template-columns: 1fr;
+  }
+}

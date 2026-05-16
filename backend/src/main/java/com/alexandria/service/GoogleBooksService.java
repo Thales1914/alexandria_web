@@ -25,9 +25,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+
 
 @Service
+
+
 public class GoogleBooksService {
+
+
 
     private static final Logger logger = LoggerFactory.getLogger(GoogleBooksService.class);
     private static final String DEFAULT_DESCRIPTION = "Descricao nao disponivel.";
@@ -88,6 +94,7 @@ public class GoogleBooksService {
         return buscarLivros(termo, "Todos", "relevance", "precise", 0, 20);
     }
 
+    @Cacheable(value = "livros", key = "#termo + #categoria + #ordem + #qualidade + #inicio + #limite")
     public List<LivroResponse> buscarLivros(
             String termo,
             String categoria,
@@ -95,7 +102,8 @@ public class GoogleBooksService {
             String qualidade,
             int inicio,
             int limite) {
-        String normalizedTerm = normalizeTerm(termo);
+
+        String normalizedTerm = normalizeTerm(termo);  // ← adiciona essa linha!
         if (normalizedTerm.isBlank()) {
             throw new IllegalArgumentException("O termo de busca e obrigatorio");
         }
@@ -130,6 +138,7 @@ public class GoogleBooksService {
         return filteredBooks;
     }
 
+    @Cacheable(value = "livroDetalhe", key = "#googleBookId")
     public LivroResponse buscarDetalhe(String googleBookId) {
         String normalizedId = normalizeTerm(googleBookId);
         if (normalizedId.isBlank()) {

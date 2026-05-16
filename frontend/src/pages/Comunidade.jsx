@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Button from '../components/Button';
 import { useAuth } from '../context/AuthContext';
+import { useGamificacao } from '../context/GamificacaoContext';
 import '../styles/pages/Comunidade.css';
 
 const STORAGE_KEY = 'alexandria.community.posts';
@@ -8,15 +9,9 @@ const STORAGE_KEY = 'alexandria.community.posts';
 function readStoredPosts() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return [];
-    }
-
+    if (!raw) return [];
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) {
-      return [];
-    }
-
+    if (!Array.isArray(parsed)) return [];
     return parsed.filter(
       (post) =>
         post?.id &&
@@ -34,23 +29,13 @@ function readStoredPosts() {
 
 function formatTimeAgo(isoDate) {
   const diff = Date.now() - new Date(isoDate).getTime();
-
-  if (Number.isNaN(diff) || diff < 60_000) {
-    return 'Agora';
-  }
-
+  if (Number.isNaN(diff) || diff < 60_000) return 'Agora';
   const minutes = Math.floor(diff / 60_000);
-  if (minutes < 60) {
-    return `Ha ${minutes} min`;
-  }
-
+  if (minutes < 60) return `Há ${minutes} min`;
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) {
-    return `Ha ${hours} h`;
-  }
-
+  if (hours < 24) return `Há ${hours} h`;
   const days = Math.floor(hours / 24);
-  return `Ha ${days} dia(s)`;
+  return `Há ${days} dia(s)`;
 }
 
 function buildPost(content, authorName, authorEmail) {
@@ -67,6 +52,7 @@ function buildPost(content, authorName, authorEmail) {
 
 function Comunidade() {
   const { user } = useAuth();
+  const { ganharXP, registrarStats } = useGamificacao();
   const accountName = (user?.name || '').trim();
   const accountEmail = (user?.email || '').trim().toLowerCase();
   const accountInitial = (accountName || accountEmail || '?').charAt(0).toUpperCase();
@@ -80,18 +66,13 @@ function Comunidade() {
 
   const totalPosts = posts.length;
   const activeReaders = useMemo(() => {
-    const uniqueAuthors = new Set(
-      posts.map((post) => (post.authorEmail || post.authorName).toLowerCase())
-    );
-    return uniqueAuthors.size;
+    const unique = new Set(posts.map((p) => (p.authorEmail || p.authorName).toLowerCase()));
+    return unique.size;
   }, [posts]);
 
   const myPosts = useMemo(() => {
-    if (!accountEmail) {
-      return 0;
-    }
-
-    return posts.filter((post) => post.authorEmail.toLowerCase() === accountEmail).length;
+    if (!accountEmail) return 0;
+    return posts.filter((p) => p.authorEmail.toLowerCase() === accountEmail).length;
   }, [accountEmail, posts]);
 
   const myLikes = useMemo(
@@ -113,24 +94,23 @@ function Comunidade() {
       return;
     }
 
-    setPosts((current) => [buildPost(normalizedContent, accountName, accountEmail), ...current]);
+    const novoPost = buildPost(normalizedContent, accountName, accountEmail);
+    const novosPosts = [novoPost, ...posts];
+    setPosts(novosPosts);
     setDraft('');
     setError('');
+
+    // ── XP por publicar ────────────────────────────────────────────────────
+    ganharXP('PUBLICAR_COMUNIDADE');
+    registrarStats({ posts: myPosts + 1 });
   };
 
   const toggleLike = (id) => {
     setPosts((current) =>
       current.map((post) => {
-        if (post.id !== id) {
-          return post;
-        }
-
+        if (post.id !== id) return post;
         const likedByMe = !post.likedByMe;
-        return {
-          ...post,
-          likedByMe,
-          likes: post.likes + (likedByMe ? 1 : -1),
-        };
+        return { ...post, likedByMe, likes: post.likes + (likedByMe ? 1 : -1) };
       })
     );
   };
@@ -138,6 +118,8 @@ function Comunidade() {
   const deletePost = (id) => {
     setPosts((current) => current.filter((post) => post.id !== id));
   };
+ //se um post for deletado depois vi ser necessario colocar uma açao para remover xp dele.                                               
+//tambem lembrar de atualzar os stats de post e xp e nao dar pau nas conquistas.
 
   return (
     <div className="comunidade">
@@ -146,13 +128,13 @@ function Comunidade() {
           <p className="comunidade__eyebrow">Comunidade</p>
           <h1>Troque leituras com outros leitores</h1>
           <p className="comunidade__subtitle">
-            Compartilhe recomendacoes, publique opinioes e acompanhe as interacoes da sua conta.
+            Compartilhe recomendações, publique opiniões e acompanhe as interações da sua conta.
           </p>
         </div>
         <div className="comunidade__stats">
           <div>
             <strong>{totalPosts}</strong>
-            <span>Publicacoes</span>
+            <span>Publicações</span>
           </div>
           <div>
             <strong>{activeReaders}</strong>
@@ -164,18 +146,16 @@ function Comunidade() {
       <div className="comunidade__grid">
         <aside className="comunidade__sidebar">
           <section className="comunidade__card">
-            <div className="comunidade__profile-avatar">
-              {accountInitial}
-            </div>
+            <div className="comunidade__profile-avatar">{accountInitial}</div>
             <h2>{accountName || 'Sem nome cadastrado'}</h2>
-            <p>{accountEmail || 'Email nao informado'}</p>
+            <p>{accountEmail || 'Email não informado'}</p>
           </section>
 
           <section className="comunidade__card">
             <h3>Sua atividade</h3>
             <ul className="comunidade__activity-list">
               <li>
-                <span>Publicacoes criadas</span>
+                <span>Publicações criadas</span>
                 <strong>{myPosts}</strong>
               </li>
               <li>
@@ -189,17 +169,15 @@ function Comunidade() {
         <main className="comunidade__feed">
           <section className="comunidade__card">
             <form className="comunidade__composer" onSubmit={handlePublish}>
-              <label htmlFor="post">Nova publicacao</label>
+              <label htmlFor="post">Nova publicação</label>
               <textarea
                 id="post"
                 className="comunidade__textarea"
                 value={draft}
                 onChange={(event) => setDraft(event.target.value)}
-                placeholder="Compartilhe uma recomendacao, trecho ou opiniao..."
+                placeholder="Compartilhe uma recomendação, trecho ou opinião..."
               />
-
               {error ? <p className="comunidade__error">{error}</p> : null}
-
               <div className="comunidade__actions">
                 <Button type="button" variant="secondary" onClick={() => setDraft('')}>
                   Limpar
@@ -211,14 +189,12 @@ function Comunidade() {
 
           {posts.length === 0 ? (
             <section className="comunidade__card comunidade__empty">
-              <h3>Nenhuma publicacao ainda</h3>
-              <p>Seja a primeira pessoa a compartilhar uma leitura.</p>
+              <h3>Nenhuma publicação ainda</h3>
+              <p>Seja a primeira pessoa a compartilhar</p>
             </section>
           ) : (
             posts.map((post) => {
-              const canDelete =
-                (post.authorEmail || '').toLowerCase() === accountEmail;
-
+              const canDelete = (post.authorEmail || '').toLowerCase() === accountEmail;
               return (
                 <section key={post.id} className="comunidade__card">
                   <div className="comunidade__activity-header">
@@ -241,8 +217,7 @@ function Comunidade() {
                     >
                       {post.likedByMe ? `Curtido (${post.likes})` : `Curtir (${post.likes})`}
                     </Button>
-
-                    {canDelete ? (
+                    {canDelete && (
                       <button
                         type="button"
                         className="comunidade__delete-btn"
@@ -250,7 +225,7 @@ function Comunidade() {
                       >
                         Remover
                       </button>
-                    ) : null}
+                    )}
                   </div>
                 </section>
               );

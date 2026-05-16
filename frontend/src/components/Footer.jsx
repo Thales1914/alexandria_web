@@ -1,19 +1,20 @@
 ﻿import { Link, useLocation } from 'react-router-dom';
 import '../styles/components/Footer.css';
 
+const HIDDEN_ROUTES = new Set(['/explorar', '/comunidade']);
+
 function Footer() {
   const location = useLocation();
-  const hiddenRoutes = ['/explorar', '/comunidade'];
-
-  if (hiddenRoutes.includes(location.pathname)) {
-    return null;
-  }
+  if (HIDDEN_ROUTES.has(location.pathname)) return null;
 
   return (
     <footer className="footer">
       <div className="footer__content">
         <div className="footer__brand">
-          <span className="footer__logo">Alexandria</span>
+          <Link to="/" className="footer__logo" aria-label="Alexandria — Página inicial">
+            <img src="/coruja.png" alt="" className="footer__owl" />
+            <span>Alexandria</span>
+          </Link>
           <p className="footer__slogan">
             Organize sua biblioteca pessoal, descubra livros e registre notas e
             avaliações em um só lugar.
@@ -25,6 +26,7 @@ function Footer() {
             <h4>Navegação</h4>
             <Link to="/">Início</Link>
             <Link to="/explorar">Explorar</Link>
+            <Link to="/conquistas">Conquistas</Link>
             <Link to="/comunidade">Comunidade</Link>
           </div>
 
