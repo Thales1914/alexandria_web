@@ -19,6 +19,21 @@ export async function alternarCurtidaPublicacao(id, token) {
   });
 }
 
+export async function criarComentarioComunidade(id, content, token) {
+  return apiRequest(`/api/comunidade/posts/${id}/comentarios`, {
+    method: 'POST',
+    token,
+    body: { content },
+  });
+}
+
+export async function removerComentarioComunidade(postId, comentarioId, token) {
+  return apiRequest(`/api/comunidade/posts/${postId}/comentarios/${comentarioId}`, {
+    method: 'DELETE',
+    token,
+  });
+}
+
 export async function removerPublicacaoComunidade(id, token) {
   return apiRequest(`/api/comunidade/posts/${id}`, {
     method: 'DELETE',

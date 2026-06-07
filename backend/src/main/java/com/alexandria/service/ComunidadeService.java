@@ -1,12 +1,16 @@
 package com.alexandria.service;
 
+import com.alexandria.dto.ComunidadeComentarioRequest;
+import com.alexandria.dto.ComunidadeComentarioResponse;
 import com.alexandria.dto.ComunidadePostRequest;
 import com.alexandria.dto.ComunidadePostResponse;
 import com.alexandria.exception.InvalidCredentialsException;
 import com.alexandria.exception.ResourceNotFoundException;
+import com.alexandria.model.ComunidadeComentario;
 import com.alexandria.model.ComunidadeCurtida;
 import com.alexandria.model.ComunidadePost;
 import com.alexandria.model.User;
+import com.alexandria.repository.ComunidadeComentarioRepository;
 import com.alexandria.repository.ComunidadeCurtidaRepository;
 import com.alexandria.repository.ComunidadePostRepository;
 import com.alexandria.repository.UserRepository;
@@ -19,14 +23,17 @@ public class ComunidadeService {
 
     private final ComunidadePostRepository postRepository;
     private final ComunidadeCurtidaRepository curtidaRepository;
+    private final ComunidadeComentarioRepository comentarioRepository;
     private final UserRepository userRepository;
 
     public ComunidadeService(
             ComunidadePostRepository postRepository,
             ComunidadeCurtidaRepository curtidaRepository,
+            ComunidadeComentarioRepository comentarioRepository,
             UserRepository userRepository) {
         this.postRepository = postRepository;
         this.curtidaRepository = curtidaRepository;
+        this.comentarioRepository = comentarioRepository;
         this.userRepository = userRepository;
     }
 
@@ -75,10 +82,45 @@ public class ComunidadeService {
     }
 
     @Transactional
+    public ComunidadePostResponse criarComentario(
+            String authenticatedEmail,
+            Long postId,
+            ComunidadeComentarioRequest request) {
+        User usuario = getAuthenticatedUser(authenticatedEmail);
+        ComunidadePost post = findPost(postId);
+        String conteudo = normalizeContent(request.content());
+
+        if (conteudo.length() < 2 || conteudo.length() > 500) {
+            throw new IllegalArgumentException("O comentário deve ter entre 2 e 500 caracteres");
+        }
+
+        ComunidadeComentario comentario = new ComunidadeComentario();
+        comentario.setPost(post);
+        comentario.setUsuario(usuario);
+        comentario.setConteudo(conteudo);
+        comentarioRepository.save(comentario);
+
+        return toResponse(post, authenticatedEmail);
+    }
+
+    @Transactional
+    public ComunidadePostResponse removerComentario(String authenticatedEmail, Long postId, Long comentarioId) {
+        getAuthenticatedUser(authenticatedEmail);
+        ComunidadePost post = findPost(postId);
+        ComunidadeComentario comentario = comentarioRepository
+                .findByIdAndPostIdAndUsuarioEmail(comentarioId, postId, authenticatedEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Comentário não encontrado"));
+
+        comentarioRepository.delete(comentario);
+        return toResponse(post, authenticatedEmail);
+    }
+
+    @Transactional
     public void removerPost(String authenticatedEmail, Long postId) {
         ComunidadePost post = postRepository.findByIdAndUsuarioEmail(postId, authenticatedEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Publicação não encontrada"));
 
+        comentarioRepository.deleteByPostId(post.getId());
         curtidaRepository.deleteByPostId(post.getId());
         postRepository.delete(post);
     }
@@ -111,6 +153,26 @@ public class ComunidadeService {
                 post.getUpdatedAt(),
                 curtidaRepository.countByPostId(post.getId()),
                 curtidaRepository.existsByPostIdAndUsuarioEmail(post.getId(), authenticatedEmail),
+                ownedByMe,
+                comentarioRepository.findByPostIdOrderByCreatedAtAsc(post.getId())
+                        .stream()
+                        .map(comentario -> toComentarioResponse(comentario, normalizedEmail))
+                        .toList());
+    }
+
+    private ComunidadeComentarioResponse toComentarioResponse(
+            ComunidadeComentario comentario,
+            String normalizedEmail) {
+        boolean ownedByMe = comentario.getUsuario().getEmail().equalsIgnoreCase(normalizedEmail);
+
+        return new ComunidadeComentarioResponse(
+                comentario.getId(),
+                comentario.getUsuario().getId(),
+                comentario.getUsuario().getName(),
+                comentario.getUsuario().getEmail(),
+                comentario.getConteudo(),
+                comentario.getCreatedAt(),
+                comentario.getUpdatedAt(),
                 ownedByMe);
     }
 }

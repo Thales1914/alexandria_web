@@ -1,9 +1,8 @@
 package com.alexandria.dto;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-public record ComunidadePostResponse(
+public record ComunidadeComentarioResponse(
         Long id,
         Long authorId,
         String authorName,
@@ -11,9 +10,6 @@ public record ComunidadePostResponse(
         String content,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        long likes,
-        boolean likedByMe,
-        boolean ownedByMe,
-        List<ComunidadeComentarioResponse> comments
+        boolean ownedByMe
 ) {
 }

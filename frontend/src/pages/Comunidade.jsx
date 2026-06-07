@@ -5,14 +5,18 @@ import { useAuth } from '../context/AuthContext';
 import { useGamificacao } from '../context/GamificacaoContext';
 import {
   alternarCurtidaPublicacao,
+  criarComentarioComunidade,
   criarPublicacaoComunidade,
   listarPublicacoesComunidade,
+  removerComentarioComunidade,
   removerPublicacaoComunidade,
 } from '../services/comunidade';
 import '../styles/pages/Comunidade.css';
 
 const MIN_CONTENT_LENGTH = 5;
 const MAX_CONTENT_LENGTH = 1000;
+const MIN_COMMENT_LENGTH = 2;
+const MAX_COMMENT_LENGTH = 500;
 
 function formatTimeAgo(isoDate) {
   const diff = Date.now() - new Date(isoDate).getTime();
@@ -52,6 +56,9 @@ function Comunidade() {
   const [loading, setLoading] = useState(true);
   const [publishing, setPublishing] = useState(false);
   const [actionPostId, setActionPostId] = useState(null);
+  const [commentDrafts, setCommentDrafts] = useState({});
+  const [commentingPostId, setCommentingPostId] = useState(null);
+  const [deletingCommentId, setDeletingCommentId] = useState(null);
 
   const loadPosts = useCallback(async () => {
     setLoading(true);
@@ -86,6 +93,13 @@ function Comunidade() {
 
   const myLikes = useMemo(
     () => posts.reduce((count, post) => count + (post.likedByMe ? 1 : 0), 0),
+    [posts]
+  );
+  const myComments = useMemo(
+    () => posts.reduce(
+      (count, post) => count + (post.comments || []).filter((comment) => comment.ownedByMe).length,
+      0
+    ),
     [posts]
   );
 
@@ -144,6 +158,68 @@ function Comunidade() {
       setError(err.message || 'Não foi possível atualizar a curtida.');
     } finally {
       setActionPostId(null);
+    }
+  };
+
+  const handleCommentChange = (postId, value) => {
+    setCommentDrafts((current) => ({
+      ...current,
+      [postId]: value,
+    }));
+  };
+
+  const createComment = async (event, postId) => {
+    event.preventDefault();
+    const normalizedContent = normalizeContent(commentDrafts[postId] || '');
+
+    if (normalizedContent.length < MIN_COMMENT_LENGTH) {
+      setError(`Escreva pelo menos ${MIN_COMMENT_LENGTH} caracteres para comentar.`);
+      return;
+    }
+
+    if (normalizedContent.length > MAX_COMMENT_LENGTH) {
+      setError(`O comentário pode ter no máximo ${MAX_COMMENT_LENGTH} caracteres.`);
+      return;
+    }
+
+    setCommentingPostId(postId);
+    setError('');
+    setSuccess('');
+
+    try {
+      const updated = await criarComentarioComunidade(postId, normalizedContent, token);
+      setPosts((current) => current.map((post) => (post.id === postId ? updated : post)));
+      setCommentDrafts((current) => ({
+        ...current,
+        [postId]: '',
+      }));
+      setSuccess('Comentário publicado.');
+    } catch (err) {
+      setError(err.message || 'Não foi possível comentar agora.');
+    } finally {
+      setCommentingPostId(null);
+    }
+  };
+
+  const deleteComment = async (post, comment) => {
+    const confirmed = window.confirm('Remover este comentário?');
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingCommentId(comment.id);
+    setError('');
+    setSuccess('');
+
+    try {
+      const updated = await removerComentarioComunidade(post.id, comment.id, token);
+      setPosts((current) => current.map((item) => (item.id === post.id ? updated : item)));
+      setSuccess('Comentário removido.');
+    } catch (err) {
+      setError(err.message || 'Não foi possível remover o comentário.');
+    } finally {
+      setDeletingCommentId(null);
     }
   };
 
@@ -213,6 +289,10 @@ function Comunidade() {
                 <span>Curtidas dadas</span>
                 <strong>{myLikes}</strong>
               </li>
+              <li>
+                <span>Comentários feitos</span>
+                <strong>{myComments}</strong>
+              </li>
             </ul>
           </section>
         </aside>
@@ -260,6 +340,13 @@ function Comunidade() {
             posts.map((post) => {
               const canDelete = post.ownedByMe || post.authorEmail?.toLowerCase() === accountEmail;
               const isBusy = actionPostId === post.id;
+              const comments = post.comments || [];
+              const commentDraft = commentDrafts[post.id] || '';
+              const commentLength = commentDraft.trim().length;
+              const isCommenting = commentingPostId === post.id;
+              const canComment = commentLength >= MIN_COMMENT_LENGTH
+                && commentLength <= MAX_COMMENT_LENGTH
+                && !isCommenting;
 
               return (
                 <section key={post.id} className="comunidade__card">
@@ -294,6 +381,66 @@ function Comunidade() {
                         {isBusy ? 'Removendo...' : 'Remover'}
                       </button>
                     )}
+                  </div>
+
+                  <div className="comunidade__comments">
+                    <div className="comunidade__comments-header">
+                      <h4>Comentários</h4>
+                      <span>{comments.length}</span>
+                    </div>
+
+                    {comments.length === 0 ? (
+                      <p className="comunidade__comments-empty">Ainda não há comentários.</p>
+                    ) : (
+                      <ul className="comunidade__comments-list">
+                        {comments.map((comment) => {
+                          const isDeletingComment = deletingCommentId === comment.id;
+
+                          return (
+                            <li key={comment.id} className="comunidade__comment">
+                              <div className="comunidade__comment-avatar">
+                                {(comment.authorName || comment.authorEmail || '?').charAt(0).toUpperCase()}
+                              </div>
+                              <div className="comunidade__comment-body">
+                                <div className="comunidade__comment-meta">
+                                  <strong>{comment.authorName}</strong>
+                                  <span>{formatTimeAgo(comment.createdAt)}</span>
+                                </div>
+                                <p>{comment.content}</p>
+                                {comment.ownedByMe && (
+                                  <button
+                                    type="button"
+                                    className="comunidade__comment-delete"
+                                    onClick={() => deleteComment(post, comment)}
+                                    disabled={isDeletingComment}
+                                  >
+                                    {isDeletingComment ? 'Removendo...' : 'Remover'}
+                                  </button>
+                                )}
+                              </div>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+
+                    <form className="comunidade__comment-form" onSubmit={(event) => createComment(event, post.id)}>
+                      <textarea
+                        className="comunidade__comment-input"
+                        value={commentDraft}
+                        onChange={(event) => handleCommentChange(post.id, event.target.value)}
+                        maxLength={MAX_COMMENT_LENGTH + 100}
+                        placeholder="Escreva um comentário..."
+                      />
+                      <div className="comunidade__comment-actions">
+                        <span className={commentLength > MAX_COMMENT_LENGTH ? 'comunidade__counter comunidade__counter--error' : 'comunidade__counter'}>
+                          {commentLength}/{MAX_COMMENT_LENGTH}
+                        </span>
+                        <Button type="submit" disabled={!canComment}>
+                          {isCommenting ? 'Comentando...' : 'Comentar'}
+                        </Button>
+                      </div>
+                    </form>
                   </div>
                 </section>
               );

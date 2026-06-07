@@ -1,5 +1,6 @@
 package com.alexandria.controller;
 
+import com.alexandria.dto.ComunidadeComentarioRequest;
 import com.alexandria.dto.ComunidadePostRequest;
 import com.alexandria.dto.ComunidadePostResponse;
 import com.alexandria.service.ComunidadeService;
@@ -42,6 +43,23 @@ public class ComunidadeController {
     @PostMapping("/{id}/like")
     public ComunidadePostResponse alternarCurtida(Authentication authentication, @PathVariable Long id) {
         return comunidadeService.alternarCurtida(authentication.getName(), id);
+    }
+
+    @PostMapping("/{id}/comentarios")
+    public ResponseEntity<ComunidadePostResponse> criarComentario(
+            Authentication authentication,
+            @PathVariable Long id,
+            @Valid @RequestBody ComunidadeComentarioRequest request) {
+        ComunidadePostResponse response = comunidadeService.criarComentario(authentication.getName(), id, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @DeleteMapping("/{id}/comentarios/{comentarioId}")
+    public ComunidadePostResponse removerComentario(
+            Authentication authentication,
+            @PathVariable Long id,
+            @PathVariable Long comentarioId) {
+        return comunidadeService.removerComentario(authentication.getName(), id, comentarioId);
     }
 
     @DeleteMapping("/{id}")
