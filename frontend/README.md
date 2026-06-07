@@ -5,7 +5,7 @@ Aplicacao frontend do projeto Alexandria.
 ## Configuracao de ambiente
 
 1. Crie o arquivo `frontend/.env.local`.
-2. Copie o conteudo de `frontend/.env.example`.
+2. Preencha as variaveis de ambiente do frontend.
 3. Preencha a chave da Google Books API em `VITE_GOOGLE_BOOKS_API_KEY`.
 
 Exemplo:
