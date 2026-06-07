@@ -52,7 +52,7 @@ export function GamificacaoProvider({ children }) {
         LISTA_CONQUISTAS.forEach((conquista) => {
           if (
             !conquistasDesbloqueadas.includes(conquista.id) &&
-            conquista.verificar({ ...stats, xp: prev.xp }) && xpBonus === (30 * conquistasDesbloqueadas.length * nivel)
+            conquista.verificar({ ...stats, xp: prev.xp })
           ) {
             conquistasDesbloqueadas.push(conquista.id);
             xpBonus += conquista.xpBonus;
@@ -92,6 +92,7 @@ export function GamificacaoProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useGamificacao() {
   const ctx = useContext(GamificacaoContext);
   if (!ctx) throw new Error('useGamificacao deve ser usado dentro de GamificacaoProvider');

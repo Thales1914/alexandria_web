@@ -79,10 +79,10 @@ function EditarPerfil() {
             <span>{avatarInitial}</span>
           </div>
           <h1>Editar perfil</h1>
-          <p>Atualize seus dados pessoais com seguranca.</p>
+          <p>Atualize seus dados pessoais com segurança.</p>
         </header>
 
-        {error && <AlertMessage type="error" title="Nao foi possivel salvar" message={error} />}
+        {error && <AlertMessage type="error" title="Não foi possível salvar" message={error} />}
         {success && <AlertMessage type="success" title="Tudo certo" message={success} />}
 
         <form className="profile-edit-form" onSubmit={handleSubmit}>
@@ -110,7 +110,7 @@ function EditarPerfil() {
               Cancelar
             </Button>
             <Button type="submit" disabled={loading || loadingProfile}>
-              {loading ? 'Salvando...' : loadingProfile ? 'Carregando...' : 'Salvar alteracoes'}
+              {loading ? 'Salvando...' : loadingProfile ? 'Carregando...' : 'Salvar alterações'}
             </Button>
           </div>
         </form>

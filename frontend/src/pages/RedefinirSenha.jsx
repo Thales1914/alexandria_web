@@ -25,7 +25,7 @@ function RedefinirSenha() {
     setSuccessMessage('');
 
     if (password !== confirmPassword) {
-      setError('As senhas nao coincidem.');
+      setError('As senhas não coincidem.');
       return;
     }
 
@@ -57,7 +57,7 @@ function RedefinirSenha() {
           <p>Defina uma nova senha para voltar ao Alexandria.</p>
         </header>
 
-        {error && <AlertMessage type="error" title="Nao foi possivel redefinir" message={error} />}
+        {error && <AlertMessage type="error" title="Não foi possível redefinir" message={error} />}
         {successMessage && (
           <AlertMessage
             type="success"
@@ -69,7 +69,7 @@ function RedefinirSenha() {
         <form className="auth-form" onSubmit={handleSubmit}>
           <Input
             id="reset-token"
-            label="Token de redefinicao"
+            label="Token de redefinição"
             type="text"
             placeholder="Cole aqui o token gerado"
             value={token}
@@ -106,8 +106,8 @@ function RedefinirSenha() {
 
         {hasTokenFromUrl && (
           <div className="auth-demo-box">
-            <strong>Link de redefinicao reconhecido</strong>
-            <p>O token da URL ja foi preenchido automaticamente para voce.</p>
+            <strong>Link de redefinição reconhecido</strong>
+            <p>O token da URL já foi preenchido automaticamente para você.</p>
           </div>
         )}
 

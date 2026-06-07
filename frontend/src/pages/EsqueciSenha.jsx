@@ -36,11 +36,11 @@ function EsqueciSenha() {
       <div className="auth-card">
         <header className="auth-header">
           <h1>Recuperar acesso</h1>
-          <p>Informe seu email para receber o link de redefinicao.</p>
+          <p>Informe seu email para receber o link de redefinição.</p>
         </header>
 
-        {error && <AlertMessage type="error" title="Falha na solicitacao" message={error} />}
-        {result && <AlertMessage type="success" title="Solicitacao concluida" message={result.message} />}
+        {error && <AlertMessage type="error" title="Falha na solicitação" message={error} />}
+        {result && <AlertMessage type="success" title="Solicitação concluída" message={result.message} />}
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <Input
@@ -55,15 +55,15 @@ function EsqueciSenha() {
 
           <div className="auth-action">
             <Button type="submit" fullWidth disabled={loading}>
-              {loading ? 'Gerando link...' : 'Gerar link de redefinicao'}
+              {loading ? 'Gerando link...' : 'Gerar link de redefinição'}
             </Button>
           </div>
         </form>
 
         {result?.resetUrl && (
           <div className="auth-demo-box">
-            <strong>Link de redefinicao gerado</strong>
-            <p>Clique abaixo para abrir a pagina de redefinicao de senha.</p>
+            <strong>Link de redefinição gerado</strong>
+            <p>Clique abaixo para abrir a página de redefinição de senha.</p>
             <Button
               variant="secondary"
               onClick={() => {

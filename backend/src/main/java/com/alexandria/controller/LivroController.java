@@ -26,7 +26,7 @@ public class LivroController {
 
     @GetMapping("/buscar")
     public List<LivroResponse> buscarLivros(
-            @RequestParam("termo") @NotBlank(message = "O termo de busca e obrigatorio") String termo,
+            @RequestParam("termo") @NotBlank(message = "O termo de busca é obrigatório") String termo,
             @RequestParam(value = "categoria", defaultValue = "Todos") String categoria,
             @RequestParam(value = "ordem", defaultValue = "relevance") String ordem,
             @RequestParam(value = "qualidade", defaultValue = "precise") String qualidade,

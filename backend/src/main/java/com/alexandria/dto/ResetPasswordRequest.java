@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ResetPasswordRequest {
 
-    @NotBlank(message = "O token de redefinicao e obrigatorio")
+    @NotBlank(message = "O token de redefinição é obrigatório")
     private String token;
 
-    @NotBlank(message = "A nova senha e obrigatoria")
-    @Size(min = 8, max = 100, message = "A nova senha deve ter no minimo 8 caracteres")
+    @NotBlank(message = "A nova senha é obrigatória")
+    @Size(min = 8, max = 100, message = "A nova senha deve ter no mínimo 8 caracteres")
     private String password;
 
-    @NotBlank(message = "A confirmacao da senha e obrigatoria")
+    @NotBlank(message = "A confirmação da senha é obrigatória")
     private String confirmPassword;
 }

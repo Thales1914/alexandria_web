@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long> {
     List<Avaliacao> findByUsuarioIdOrderByDataAvaliacaoDesc(Long usuarioId);
+    List<Avaliacao> findByUsuarioEmailOrderByDataAvaliacaoDesc(String email);
     Optional<Avaliacao> findByUsuarioIdAndLivroId(Long usuarioId, Long livroId);
+    Optional<Avaliacao> findByIdAndUsuarioEmail(Long id, String email);
     boolean existsByUsuarioIdAndLivroId(Long usuarioId, Long livroId);
 }

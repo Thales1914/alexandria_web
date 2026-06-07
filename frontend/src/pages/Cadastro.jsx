@@ -26,7 +26,7 @@ function getPasswordStrength(password) {
   if (password.length >= 12) score++;
 
   if (score <= 1) return { level: 1, label: 'Fraca', className: 'weak' };
-  if (score === 2) return { level: 2, label: 'Media', className: 'medium' };
+  if (score === 2) return { level: 2, label: 'Média', className: 'medium' };
   if (score === 3) return { level: 3, label: 'Forte', className: 'strong' };
   return { level: 4, label: 'Muito forte', className: 'very-strong' };
 }
@@ -37,7 +37,7 @@ function validateEmail(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   if (!emailRegex.test(email)) {
-    return 'Formato de email invalido';
+    return 'Formato de email inválido';
   }
 
   return '';
@@ -75,26 +75,26 @@ const Cadastro = () => {
 
       switch (field) {
         case 'name':
-          if (!nome) return 'O nome e obrigatorio';
-          if (nome.length < 2) return 'O nome deve ter no minimo 2 caracteres';
-          if (nome.length > 120) return 'O nome deve ter no maximo 120 caracteres';
+          if (!nome) return 'O nome é obrigatório';
+          if (nome.length < 2) return 'O nome deve ter no mínimo 2 caracteres';
+          if (nome.length > 120) return 'O nome deve ter no máximo 120 caracteres';
           return '';
         case 'email':
-          if (!email) return 'O email e obrigatorio';
+          if (!email) return 'O email é obrigatório';
           return validateEmail(email);
         case 'password':
-          if (!senha) return 'A senha e obrigatoria';
-          if (senha.length < 8) return 'A senha deve ter no minimo 8 caracteres';
+          if (!senha) return 'A senha é obrigatória';
+          if (senha.length < 8) return 'A senha deve ter no mínimo 8 caracteres';
           if (!PASSWORD_RULES.hasUppercase.test(senha)) {
-            return 'A senha deve conter ao menos uma letra maiuscula';
+            return 'A senha deve conter ao menos uma letra maiúscula';
           }
           if (!PASSWORD_RULES.hasNumber.test(senha)) {
-            return 'A senha deve conter ao menos um numero';
+            return 'A senha deve conter ao menos um número';
           }
           return '';
         case 'confirmPassword':
           if (!confirmaSenha) return 'Confirme sua senha';
-          if (senha !== confirmaSenha) return 'As senhas nao coincidem';
+          if (senha !== confirmaSenha) return 'As senhas não coincidem';
           return '';
         default:
           return '';
@@ -176,14 +176,14 @@ const Cadastro = () => {
       <div className="auth-card">
         <header className="auth-header">
           <h1>Alexandria</h1>
-          <p>Criacao de conta</p>
+          <p>Criação de conta</p>
         </header>
 
         {sucesso && (
           <AlertMessage
             type="success"
             title="Conta criada com sucesso!"
-            message="Voce ja esta autenticado. Redirecionando..."
+            message="Você já está autenticado. Redirecionando..."
           />
         )}
 
@@ -298,7 +298,7 @@ const Cadastro = () => {
 
         <footer className="auth-footer">
           <p>
-            Ja possui uma conta? <Link to="/login">Entrar</Link>
+            Já possui uma conta? <Link to="/login">Entrar</Link>
           </p>
         </footer>
       </div>

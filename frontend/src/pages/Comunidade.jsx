@@ -1,78 +1,87 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import AlertMessage from '../components/AlertMessage';
 import Button from '../components/Button';
 import { useAuth } from '../context/AuthContext';
 import { useGamificacao } from '../context/GamificacaoContext';
+import {
+  alternarCurtidaPublicacao,
+  criarPublicacaoComunidade,
+  listarPublicacoesComunidade,
+  removerPublicacaoComunidade,
+} from '../services/comunidade';
 import '../styles/pages/Comunidade.css';
 
-const STORAGE_KEY = 'alexandria.community.posts';
-
-function readStoredPosts() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter(
-      (post) =>
-        post?.id &&
-        post?.content &&
-        post?.createdAt &&
-        typeof post.authorName === 'string' &&
-        post.authorName.trim().length > 0 &&
-        typeof post.authorEmail === 'string' &&
-        post.authorEmail.trim().length > 0
-    );
-  } catch {
-    return [];
-  }
-}
+const MIN_CONTENT_LENGTH = 5;
+const MAX_CONTENT_LENGTH = 1000;
 
 function formatTimeAgo(isoDate) {
   const diff = Date.now() - new Date(isoDate).getTime();
-  if (Number.isNaN(diff) || diff < 60_000) return 'Agora';
+
+  if (Number.isNaN(diff) || diff < 60_000) {
+    return 'Agora';
+  }
+
   const minutes = Math.floor(diff / 60_000);
-  if (minutes < 60) return `Há ${minutes} min`;
+  if (minutes < 60) {
+    return `Há ${minutes} min`;
+  }
+
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `Há ${hours} h`;
+  if (hours < 24) {
+    return `Há ${hours} h`;
+  }
+
   const days = Math.floor(hours / 24);
   return `Há ${days} dia(s)`;
 }
 
-function buildPost(content, authorName, authorEmail) {
-  return {
-    id: crypto.randomUUID(),
-    content,
-    createdAt: new Date().toISOString(),
-    likes: 0,
-    likedByMe: false,
-    authorName,
-    authorEmail,
-  };
+function normalizeContent(value) {
+  return value.trim().replace(/[\t\v\f\r ]+/g, ' ');
 }
 
 function Comunidade() {
-  const { user } = useAuth();
+  const { token, user } = useAuth();
   const { ganharXP, registrarStats } = useGamificacao();
   const accountName = (user?.name || '').trim();
   const accountEmail = (user?.email || '').trim().toLowerCase();
   const accountInitial = (accountName || accountEmail || '?').charAt(0).toUpperCase();
   const [draft, setDraft] = useState('');
   const [error, setError] = useState('');
-  const [posts, setPosts] = useState(readStoredPosts);
+  const [success, setSuccess] = useState('');
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [publishing, setPublishing] = useState(false);
+  const [actionPostId, setActionPostId] = useState(null);
+
+  const loadPosts = useCallback(async () => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await listarPublicacoesComunidade(token);
+      setPosts(response || []);
+    } catch (err) {
+      setPosts([]);
+      setError(err.message || 'Não foi possível carregar a comunidade.');
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
-  }, [posts]);
+    loadPosts();
+  }, [loadPosts]);
 
   const totalPosts = posts.length;
   const activeReaders = useMemo(() => {
-    const unique = new Set(posts.map((p) => (p.authorEmail || p.authorName).toLowerCase()));
-    return unique.size;
+    const uniqueAuthors = new Set(
+      posts.map((post) => (post.authorEmail || post.authorName || '').toLowerCase()).filter(Boolean)
+    );
+    return uniqueAuthors.size;
   }, [posts]);
 
   const myPosts = useMemo(() => {
-    if (!accountEmail) return 0;
-    return posts.filter((p) => p.authorEmail.toLowerCase() === accountEmail).length;
+    return posts.filter((post) => post.ownedByMe || post.authorEmail?.toLowerCase() === accountEmail).length;
   }, [accountEmail, posts]);
 
   const myLikes = useMemo(
@@ -80,46 +89,85 @@ function Comunidade() {
     [posts]
   );
 
-  const handlePublish = (event) => {
+  useEffect(() => {
+    registrarStats({ posts: myPosts });
+  }, [myPosts, registrarStats]);
+
+  const contentLength = draft.trim().length;
+  const canPublish = contentLength >= MIN_CONTENT_LENGTH && contentLength <= MAX_CONTENT_LENGTH && !publishing;
+
+  const handlePublish = async (event) => {
     event.preventDefault();
-    const normalizedContent = draft.trim();
+    const normalizedContent = normalizeContent(draft);
 
     if (!accountName || !accountEmail) {
       setError('Complete seu nome e email no perfil para publicar na comunidade.');
       return;
     }
 
-    if (normalizedContent.length < 5) {
-      setError('Escreva pelo menos 5 caracteres para publicar.');
+    if (normalizedContent.length < MIN_CONTENT_LENGTH) {
+      setError(`Escreva pelo menos ${MIN_CONTENT_LENGTH} caracteres para publicar.`);
       return;
     }
 
-    const novoPost = buildPost(normalizedContent, accountName, accountEmail);
-    const novosPosts = [novoPost, ...posts];
-    setPosts(novosPosts);
-    setDraft('');
+    if (normalizedContent.length > MAX_CONTENT_LENGTH) {
+      setError(`A publicação pode ter no máximo ${MAX_CONTENT_LENGTH} caracteres.`);
+      return;
+    }
+
+    setPublishing(true);
     setError('');
+    setSuccess('');
 
-    // ── XP por publicar ────────────────────────────────────────────────────
-    ganharXP('PUBLICAR_COMUNIDADE');
-    registrarStats({ posts: myPosts + 1 });
+    try {
+      const created = await criarPublicacaoComunidade(normalizedContent, token);
+      setPosts((current) => [created, ...current]);
+      setDraft('');
+      setSuccess('Publicação criada.');
+      ganharXP('PUBLICAR_COMUNIDADE');
+    } catch (err) {
+      setError(err.message || 'Não foi possível publicar agora.');
+    } finally {
+      setPublishing(false);
+    }
   };
 
-  const toggleLike = (id) => {
-    setPosts((current) =>
-      current.map((post) => {
-        if (post.id !== id) return post;
-        const likedByMe = !post.likedByMe;
-        return { ...post, likedByMe, likes: post.likes + (likedByMe ? 1 : -1) };
-      })
-    );
+  const toggleLike = async (id) => {
+    setActionPostId(id);
+    setError('');
+    setSuccess('');
+
+    try {
+      const updated = await alternarCurtidaPublicacao(id, token);
+      setPosts((current) => current.map((post) => (post.id === id ? updated : post)));
+    } catch (err) {
+      setError(err.message || 'Não foi possível atualizar a curtida.');
+    } finally {
+      setActionPostId(null);
+    }
   };
 
-  const deletePost = (id) => {
-    setPosts((current) => current.filter((post) => post.id !== id));
+  const deletePost = async (post) => {
+    const confirmed = window.confirm('Remover esta publicação da comunidade?');
+
+    if (!confirmed) {
+      return;
+    }
+
+    setActionPostId(post.id);
+    setError('');
+    setSuccess('');
+
+    try {
+      await removerPublicacaoComunidade(post.id, token);
+      setPosts((current) => current.filter((item) => item.id !== post.id));
+      setSuccess('Publicação removida.');
+    } catch (err) {
+      setError(err.message || 'Não foi possível remover a publicação.');
+    } finally {
+      setActionPostId(null);
+    }
   };
- //se um post for deletado depois vi ser necessario colocar uma açao para remover xp dele.                                               
-//tambem lembrar de atualzar os stats de post e xp e nao dar pau nas conquistas.
 
   return (
     <div className="comunidade">
@@ -142,6 +190,9 @@ function Comunidade() {
           </div>
         </div>
       </header>
+
+      {error && <AlertMessage type="error" title="Falha" message={error} />}
+      {success && <AlertMessage type="success" title="Tudo certo" message={success} />}
 
       <div className="comunidade__grid">
         <aside className="comunidade__sidebar">
@@ -169,37 +220,52 @@ function Comunidade() {
         <main className="comunidade__feed">
           <section className="comunidade__card">
             <form className="comunidade__composer" onSubmit={handlePublish}>
-              <label htmlFor="post">Nova publicação</label>
+              <div className="comunidade__composer-header">
+                <label htmlFor="post">Nova publicação</label>
+                <span className={contentLength > MAX_CONTENT_LENGTH ? 'comunidade__counter comunidade__counter--error' : 'comunidade__counter'}>
+                  {contentLength}/{MAX_CONTENT_LENGTH}
+                </span>
+              </div>
               <textarea
                 id="post"
                 className="comunidade__textarea"
                 value={draft}
                 onChange={(event) => setDraft(event.target.value)}
+                maxLength={MAX_CONTENT_LENGTH + 100}
                 placeholder="Compartilhe uma recomendação, trecho ou opinião..."
               />
-              {error ? <p className="comunidade__error">{error}</p> : null}
+
               <div className="comunidade__actions">
-                <Button type="button" variant="secondary" onClick={() => setDraft('')}>
+                <Button type="button" variant="secondary" onClick={() => setDraft('')} disabled={publishing || !draft}>
                   Limpar
                 </Button>
-                <Button type="submit">Publicar</Button>
+                <Button type="submit" disabled={!canPublish}>
+                  {publishing ? 'Publicando...' : 'Publicar'}
+                </Button>
               </div>
             </form>
           </section>
 
-          {posts.length === 0 ? (
+          {loading ? (
+            <section className="comunidade__card comunidade__empty">
+              <h3>Carregando publicações...</h3>
+              <p>Aguarde enquanto buscamos o feed da comunidade.</p>
+            </section>
+          ) : posts.length === 0 ? (
             <section className="comunidade__card comunidade__empty">
               <h3>Nenhuma publicação ainda</h3>
-              <p>Seja a primeira pessoa a compartilhar</p>
+              <p>Seja a primeira pessoa a compartilhar uma leitura.</p>
             </section>
           ) : (
             posts.map((post) => {
-              const canDelete = (post.authorEmail || '').toLowerCase() === accountEmail;
+              const canDelete = post.ownedByMe || post.authorEmail?.toLowerCase() === accountEmail;
+              const isBusy = actionPostId === post.id;
+
               return (
                 <section key={post.id} className="comunidade__card">
                   <div className="comunidade__activity-header">
                     <div className="comunidade__activity-avatar">
-                      {(post.authorName || post.authorEmail).charAt(0).toUpperCase()}
+                      {(post.authorName || post.authorEmail || '?').charAt(0).toUpperCase()}
                     </div>
                     <div>
                       <strong>{post.authorName}</strong>
@@ -214,6 +280,7 @@ function Comunidade() {
                       type="button"
                       variant={post.likedByMe ? 'primary' : 'secondary'}
                       onClick={() => toggleLike(post.id)}
+                      disabled={isBusy}
                     >
                       {post.likedByMe ? `Curtido (${post.likes})` : `Curtir (${post.likes})`}
                     </Button>
@@ -221,9 +288,10 @@ function Comunidade() {
                       <button
                         type="button"
                         className="comunidade__delete-btn"
-                        onClick={() => deletePost(post.id)}
+                        onClick={() => deletePost(post)}
+                        disabled={isBusy}
                       >
-                        Remover
+                        {isBusy ? 'Removendo...' : 'Remover'}
                       </button>
                     )}
                   </div>

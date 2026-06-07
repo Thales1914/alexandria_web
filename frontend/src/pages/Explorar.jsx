@@ -12,10 +12,10 @@ const CATEGORY_OPTIONS = [
   'Todos',
   'Fantasia',
   'Romance',
-  'Historia',
+  'História',
   'Tecnologia',
   'Biografia',
-  'Misterio',
+  'Mistério',
 ];
 
 const ORDER_OPTIONS = [
@@ -24,9 +24,9 @@ const ORDER_OPTIONS = [
 ];
 
 const QUALITY_OPTIONS = [
-  { label: 'Precisos', value: 'precise', detail: 'Titulo ou autor' },
+  { label: 'Precisos', value: 'precise', detail: 'Título ou autor' },
   { label: 'Curados', value: 'curated', detail: 'Capa e sinopse' },
-  { label: 'Amplos', value: 'all', detail: 'Menos restricoes' },
+  { label: 'Amplos', value: 'all', detail: 'Menos restrições' },
 ];
 
 const PAGE_SIZE = 6;
@@ -106,7 +106,7 @@ function Explorar() {
         if (!cancelled) {
           setBooks([]);
           setTotalItems(0);
-          setError(err.message || 'Nao foi possivel carregar os livros agora.');
+          setError(err.message || 'Não foi possível carregar os livros agora.');
         }
       } finally {
         if (!cancelled) {
@@ -206,7 +206,7 @@ function Explorar() {
       setBooks((current) => [...current, ...response.items]);
       setTotalItems(response.totalItems);
     } catch (err) {
-      setError(err.message || 'Nao foi possivel carregar mais resultados.');
+      setError(err.message || 'Não foi possível carregar mais resultados.');
     } finally {
       setLoadingMore(false);
     }
@@ -214,7 +214,7 @@ function Explorar() {
 
   const handleSaveBook = async (book) => {
     if (!user?.id) {
-      setError('Nao foi possivel identificar o usuario autenticado.');
+      setError('Não foi possível identificar o usuário autenticado.');
       return;
     }
 
@@ -228,9 +228,9 @@ function Explorar() {
         googleBookId: book.id,
         token,
       });
-      setSuccessMessage(`"${book.title}" foi adicionado a sua biblioteca.`);
+      setSuccessMessage(`"${book.title}" foi adicionado à sua biblioteca.`);
     } catch (err) {
-      setError(err.message || 'Nao foi possivel salvar o livro na biblioteca.');
+      setError(err.message || 'Não foi possível salvar o livro na biblioteca.');
     } finally {
       setSavingBookId('');
     }
@@ -240,16 +240,16 @@ function Explorar() {
     <div className="explorar">
       <section className="explorar__hero">
         <p className="explorar__eyebrow">Explorar</p>
-        <h1 className="explorar__title">Encontre livros para sua proxima leitura.</h1>
+        <h1 className="explorar__title">Encontre livros para sua próxima leitura.</h1>
         <p className="explorar__subtitle">
-          Pesquise, filtre e avance pelos resultados de forma rapida e organizada.
+          Pesquise, filtre e avance pelos resultados de forma rápida e organizada.
         </p>
 
         <form className="explorar__search-form" onSubmit={handleSearchSubmit}>
           <div className="explorar__search">
             <Input
               id="explorar-search"
-              label="Buscar por titulo, autor ou assunto"
+              label="Buscar por título, autor ou assunto"
               placeholder="Ex.: Machado de Assis"
               value={draftQuery}
               onChange={(event) => {
@@ -269,7 +269,7 @@ function Explorar() {
           <div className="explorar__filter-header">
             <div>
               <p>Filtros</p>
-              <span>{hasActiveFilters ? 'Busca refinada' : 'Padrao'}</span>
+              <span>{hasActiveFilters ? 'Busca refinada' : 'Padrão'}</span>
             </div>
             <button
               className="explorar__clear-filters"
@@ -300,8 +300,8 @@ function Explorar() {
           </div>
 
           <div className="explorar__filter-block">
-            <h2>Ordenacao</h2>
-            <div className="explorar__segmented" role="group" aria-label="Ordenacao">
+            <h2>Ordenação</h2>
+            <div className="explorar__segmented" role="group" aria-label="Ordenação">
               {ORDER_OPTIONS.map((option) => (
                 <button
                   key={option.value}
@@ -347,9 +347,9 @@ function Explorar() {
               <p className="explorar__caption">
                 {hasValidSearchTerm
                   ? selectedQuality === 'curated'
-                    ? 'Resultados com boa apresentacao, capa e sinopse.'
+                    ? 'Resultados com boa apresentação, capa e sinopse.'
                     : selectedQuality === 'precise'
-                      ? 'Resultados com match forte no titulo ou autor.'
+                      ? 'Resultados com match forte no título ou autor.'
                       : 'Resultados amplos retornados pela busca.'
                   : 'Nenhuma consulta ativa. Digite um termo e clique em Buscar.'}
               </p>
@@ -368,7 +368,7 @@ function Explorar() {
             <div className="explorar__status-card">
               <AlertMessage
                 type="error"
-                title="Nao foi possivel concluir"
+                title="Não foi possível concluir"
                 message={error}
               />
             </div>
@@ -388,7 +388,7 @@ function Explorar() {
             <div className="explorar__status-card">
               <h3>Comece sua busca</h3>
               <p>
-                Digite um termo e clique em Buscar para encontrar livros por titulo, autor ou assunto.
+                Digite um termo e clique em Buscar para encontrar livros por título, autor ou assunto.
               </p>
             </div>
           ) : !hasValidSearchTerm ? null : loading ? (
@@ -438,7 +438,7 @@ function Explorar() {
                     {loadingMore ? 'Carregando mais...' : 'Carregar mais resultados'}
                   </Button>
                 ) : (
-                  <span>Voce ja visualizou todos os resultados desta busca.</span>
+                  <span>Você já visualizou todos os resultados desta busca.</span>
                 )}
               </div>
             </>

@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errors.put(error.getField(), error.getDefaultMessage()));
 
-        ErrorResponse response = new ErrorResponse("Erro de validacao", errors);
+        ErrorResponse response = new ErrorResponse("Erro de validação", errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
         ex.getConstraintViolations().forEach(error ->
                 errors.put(error.getPropertyPath().toString(), error.getMessage()));
 
-        ErrorResponse response = new ErrorResponse("Erro de validacao", errors);
+        ErrorResponse response = new ErrorResponse("Erro de validação", errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
         errors.put("email", ex.getMessage());
 
-        ErrorResponse response = new ErrorResponse("Email ja cadastrado", errors);
+        ErrorResponse response = new ErrorResponse("Email já cadastrado", errors);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 

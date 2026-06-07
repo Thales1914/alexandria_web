@@ -5,6 +5,7 @@ import com.alexandria.dto.BibliotecaResponse;
 import com.alexandria.dto.FavoritoRequest;
 import com.alexandria.dto.StatusLeituraRequest;
 import com.alexandria.exception.DuplicateResourceException;
+import com.alexandria.exception.InvalidCredentialsException;
 import com.alexandria.exception.ResourceNotFoundException;
 import com.alexandria.model.Biblioteca;
 import com.alexandria.model.Livro;
@@ -36,13 +37,12 @@ public class BibliotecaService {
     }
 
     @Transactional
-    public BibliotecaResponse salvarNaBiblioteca(BibliotecaRequest request) {
-        User usuario = userRepository.findById(request.usuarioId())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario nao encontrado"));
+    public BibliotecaResponse salvarNaBiblioteca(String authenticatedEmail, BibliotecaRequest request) {
+        User usuario = getAuthenticatedUser(authenticatedEmail);
         Livro livro = livroService.buscarOuSalvarPorGoogleId(request.googleBookId());
 
         if (bibliotecaRepository.existsByUsuarioIdAndLivroId(usuario.getId(), livro.getId())) {
-            throw new DuplicateResourceException("Este livro ja esta na biblioteca do usuario");
+            throw new DuplicateResourceException("Este livro já está na biblioteca do usuário");
         }
 
         Biblioteca biblioteca = new Biblioteca();
@@ -55,9 +55,19 @@ public class BibliotecaService {
     }
 
     @Transactional(readOnly = true)
-    public List<BibliotecaResponse> listarPorUsuario(Long usuarioId) {
-        if (!userRepository.existsById(usuarioId)) {
-            throw new ResourceNotFoundException("Usuario nao encontrado");
+    public List<BibliotecaResponse> listarMinhaBiblioteca(String authenticatedEmail) {
+        getAuthenticatedUser(authenticatedEmail);
+        return bibliotecaRepository.findByUsuarioEmailOrderByDataAdicaoDesc(authenticatedEmail)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<BibliotecaResponse> listarPorUsuario(String authenticatedEmail, Long usuarioId) {
+        User usuario = getAuthenticatedUser(authenticatedEmail);
+        if (!usuario.getId().equals(usuarioId)) {
+            throw new ResourceNotFoundException("Usuário não encontrado");
         }
 
         return bibliotecaRepository.findByUsuarioIdOrderByDataAdicaoDesc(usuarioId)
@@ -67,22 +77,39 @@ public class BibliotecaService {
     }
 
     @Transactional
-    public BibliotecaResponse atualizarStatus(Long bibliotecaId, StatusLeituraRequest request) {
-        Biblioteca biblioteca = findBiblioteca(bibliotecaId);
+    public BibliotecaResponse atualizarStatus(
+            String authenticatedEmail,
+            Long bibliotecaId,
+            StatusLeituraRequest request) {
+        Biblioteca biblioteca = findOwnedBiblioteca(authenticatedEmail, bibliotecaId);
         biblioteca.setStatusLeitura(request.statusLeitura());
         return toResponse(bibliotecaRepository.save(biblioteca));
     }
 
     @Transactional
-    public BibliotecaResponse atualizarFavorito(Long bibliotecaId, FavoritoRequest request) {
-        Biblioteca biblioteca = findBiblioteca(bibliotecaId);
+    public BibliotecaResponse atualizarFavorito(
+            String authenticatedEmail,
+            Long bibliotecaId,
+            FavoritoRequest request) {
+        Biblioteca biblioteca = findOwnedBiblioteca(authenticatedEmail, bibliotecaId);
         biblioteca.setFavorito(request.favorito());
         return toResponse(bibliotecaRepository.save(biblioteca));
     }
 
-    private Biblioteca findBiblioteca(Long bibliotecaId) {
-        return bibliotecaRepository.findById(bibliotecaId)
-                .orElseThrow(() -> new ResourceNotFoundException("Registro de biblioteca nao encontrado"));
+    @Transactional
+    public void removerDaBiblioteca(String authenticatedEmail, Long bibliotecaId) {
+        Biblioteca biblioteca = findOwnedBiblioteca(authenticatedEmail, bibliotecaId);
+        bibliotecaRepository.delete(biblioteca);
+    }
+
+    private User getAuthenticatedUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new InvalidCredentialsException("Usuário autenticado não encontrado"));
+    }
+
+    private Biblioteca findOwnedBiblioteca(String authenticatedEmail, Long bibliotecaId) {
+        return bibliotecaRepository.findByIdAndUsuarioEmail(bibliotecaId, authenticatedEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Registro de biblioteca não encontrado"));
     }
 
     private BibliotecaResponse toResponse(Biblioteca biblioteca) {

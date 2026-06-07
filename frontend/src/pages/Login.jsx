@@ -59,14 +59,14 @@ const Login = () => {
         <AlertMessage
           type="success"
           title="Login realizado com sucesso!"
-          message="Redirecionando para a area protegida..."
+          message="Redirecionando para a área protegida..."
         />
       )}
 
       <div className="auth-card">
         <header className="auth-header">
           <h1>Alexandria</h1>
-          <p>Autenticacao de acesso</p>
+          <p>Autenticação de acesso</p>
         </header>
 
         {erro && !sucesso && (
@@ -120,7 +120,7 @@ const Login = () => {
 
         <footer className="auth-footer">
           <p>
-            Nao possui conta? <Link to="/cadastro">Cadastrar</Link>
+            Não possui conta? <Link to="/cadastro">Cadastrar</Link>
           </p>
         </footer>
       </div>

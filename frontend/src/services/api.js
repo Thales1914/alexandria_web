@@ -9,6 +9,14 @@ export const apiClient = axios.create({
   },
 });
 
+const AUTH_STORAGE_KEYS = ['token', 'userName', 'userEmail', 'userId'];
+export const AUTH_CHANGED_EVENT = 'alexandria:auth-changed';
+
+function clearStoredAuth() {
+  AUTH_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+  window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+}
+
 export async function apiRequest(path, options = {}) {
   const { method = 'GET', body, headers = {}, token } = options;
 
@@ -26,8 +34,20 @@ export async function apiRequest(path, options = {}) {
     return response.data;
   } catch (err) {
     const data = err.response?.data;
-    const error = new Error(data?.message || 'Nao foi possivel concluir a requisicao.');
-    error.status = err.response?.status;
+    const status = err.response?.status;
+    const isAuthError = token && (status === 401 || status === 403);
+
+    if (isAuthError) {
+      clearStoredAuth();
+    }
+
+    const error = new Error(
+      data?.message
+        || (isAuthError
+          ? 'Sua sessão expirou. Entre novamente.'
+          : 'Não foi possível concluir a requisição.'),
+    );
+    error.status = status;
     error.data = data;
     throw error;
   }

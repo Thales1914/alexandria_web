@@ -19,8 +19,8 @@ export async function salvarNaBiblioteca({ usuarioId, googleBookId, statusLeitur
   });
 }
 
-export async function listarBiblioteca(usuarioId, token) {
-  return apiRequest(`/api/biblioteca/usuario/${usuarioId}`, { token });
+export async function listarBiblioteca(token) {
+  return apiRequest('/api/biblioteca/minha', { token });
 }
 
 export async function atualizarStatusBiblioteca(id, statusLeitura, token) {
@@ -36,5 +36,12 @@ export async function atualizarFavoritoBiblioteca(id, favorito, token) {
     method: 'PUT',
     token,
     body: { favorito },
+  });
+}
+
+export async function removerDaBiblioteca(id, token) {
+  return apiRequest(`/api/biblioteca/${id}`, {
+    method: 'DELETE',
+    token,
   });
 }

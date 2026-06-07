@@ -4,8 +4,8 @@ import AlertMessage from '../components/AlertMessage';
 import Button from '../components/Button';
 import { useAuth } from '../context/AuthContext';
 import { useGamificacao } from '../context/GamificacaoContext';
-import { salvarNaBiblioteca, STATUS_LEITURA } from '../services/biblioteca';
 import { criarAvaliacao } from '../services/avaliacoes';
+import { salvarNaBiblioteca, STATUS_LEITURA } from '../services/biblioteca';
 import { getBookDetails } from '../services/livros';
 import NotFound from './NotFound';
 import '../styles/pages/LivroDetalhe.css';
@@ -16,7 +16,7 @@ function LivroDetalhe() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { token, user } = useAuth();
-  const { ganharXP, registrarStats } = useGamificacao();
+  const { estado, ganharXP, registrarStats } = useGamificacao();
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -37,16 +37,25 @@ function LivroDetalhe() {
 
       try {
         const response = await getBookDetails(id, token);
-        if (!cancelled) setBook(response);
+        if (!cancelled) {
+          setBook(response);
+        }
       } catch (err) {
-        if (!cancelled) setError(err.message || 'Não foi possível carregar os detalhes do livro.');
+        if (!cancelled) {
+          setError(err.message || 'Não foi possível carregar os detalhes do livro.');
+        }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
     loadBook();
-    return () => { cancelled = true; };
+
+    return () => {
+      cancelled = true;
+    };
   }, [id, token]);
 
   const handleSave = async () => {
@@ -68,12 +77,8 @@ function LivroDetalhe() {
       });
       setSavedEntry(response);
       setSuccessMessage('Livro adicionado à sua biblioteca.');
-
-      // ── XP por adicionar livro ─────────────────────────────────────────────
-      //definir quanto de Xp por cada ação.
-      const xpAdicionarLivro = 10; // Exemplo de valor
       ganharXP('ADICIONAR_LIVRO');
-      registrarStats({ totalLivros: (prev) => (prev || 0) + 1 });
+      registrarStats({ totalLivros: (estado.stats?.totalLivros || 0) + 1 });
     } catch (err) {
       setError(err.message || 'Não foi possível salvar o livro na biblioteca.');
     } finally {
@@ -83,10 +88,9 @@ function LivroDetalhe() {
 
   const handleReview = async (event) => {
     event.preventDefault();
-    const livroId = savedEntry?.livro?.id || book?.databaseId;
 
-    if (!user?.id || !livroId) {
-      setError('Adicione o livro à biblioteca antes de avaliar.');
+    if (!user?.id) {
+      setError('Não foi possível identificar o usuário autenticado.');
       return;
     }
 
@@ -97,18 +101,16 @@ function LivroDetalhe() {
     try {
       await criarAvaliacao({
         usuarioId: user.id,
-        livroId,
+        livroId: savedEntry?.livro?.id || book?.databaseId || null,
+        googleBookId: id,
         nota: Number(nota),
         resenha,
         token,
       });
       setSuccessMessage('Avaliação registrada com sucesso.');
       setResenha('');
-
-      // ── XP por avaliação ───────────────────────────────────────────────────
-      const xpAvaliarLivro = 15; // Exemplo de valor
       ganharXP('AVALIAR_LIVRO');
-      registrarStats({ avaliacoes: (prev) => (prev || 0) + 1 });
+      registrarStats({ avaliacoes: (estado.stats?.avaliacoes || 0) + 1 });
     } catch (err) {
       setError(err.message || 'Não foi possível registrar a avaliação.');
     } finally {
@@ -132,7 +134,11 @@ function LivroDetalhe() {
   return (
     <section className="livro-detalhe">
       {error && book && (
-        <AlertMessage type="error" title="Não foi possível concluir" message={error} />
+        <AlertMessage
+          type="error"
+          title="Não foi possível concluir"
+          message={error}
+        />
       )}
       {successMessage && (
         <AlertMessage type="success" title="Tudo certo" message={successMessage} />
@@ -186,7 +192,7 @@ function LivroDetalhe() {
             <form className="livro-detalhe__review" onSubmit={handleReview}>
               <div>
                 <h2>Avaliar livro</h2>
-                <p>Depois de salvar na biblioteca, registre sua nota e resenha.</p>
+                <p>Registre sua nota e uma resenha para acompanhar depois.</p>
               </div>
 
               <fieldset className="livro-detalhe__rating">

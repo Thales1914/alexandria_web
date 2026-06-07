@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BibliotecaRepository extends JpaRepository<Biblioteca, Long> {
     List<Biblioteca> findByUsuarioIdOrderByDataAdicaoDesc(Long usuarioId);
+    List<Biblioteca> findByUsuarioEmailOrderByDataAdicaoDesc(String email);
     Optional<Biblioteca> findByUsuarioIdAndLivroId(Long usuarioId, Long livroId);
+    Optional<Biblioteca> findByIdAndUsuarioEmail(Long id, String email);
     boolean existsByUsuarioIdAndLivroId(Long usuarioId, Long livroId);
 }

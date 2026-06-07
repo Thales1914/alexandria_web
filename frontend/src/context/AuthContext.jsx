@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { AUTH_CHANGED_EVENT } from '../services/api';
 
 const AuthContext = createContext();
+const AUTH_STORAGE_KEYS = ['token', 'userName', 'userEmail', 'userId'];
 
 function getStoredAuth() {
   const token = localStorage.getItem('token');
@@ -20,6 +22,10 @@ function getStoredAuth() {
   };
 }
 
+function clearStoredAuth() {
+  AUTH_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+}
+
 export function AuthProvider({ children }) {
   const [authState, setAuthState] = useState(getStoredAuth);
 
@@ -29,7 +35,12 @@ export function AuthProvider({ children }) {
     };
 
     window.addEventListener('storage', syncAuthState);
-    return () => window.removeEventListener('storage', syncAuthState);
+    window.addEventListener(AUTH_CHANGED_EVENT, syncAuthState);
+
+    return () => {
+      window.removeEventListener('storage', syncAuthState);
+      window.removeEventListener(AUTH_CHANGED_EVENT, syncAuthState);
+    };
   }, []);
 
   const login = (data) => {
@@ -49,10 +60,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('userId');
+    clearStoredAuth();
 
     setAuthState({
       token: null,

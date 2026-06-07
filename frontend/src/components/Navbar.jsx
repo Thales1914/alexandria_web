@@ -31,9 +31,7 @@ function Navbar() {
   return (
     <header className="navbar">
       <div className="navbar__inner">
-
-        {/* Marca e logo */}
-        <NavLink className="navbar__brand" to="/" aria-label="Alexandria — Página inicial">
+        <NavLink className="navbar__brand" to="/" aria-label="Alexandria - Página inicial">
           <img src="/coruja.png" alt="" className="navbar__owl" />
           <span>Alexandria</span>
         </NavLink>
@@ -55,6 +53,9 @@ function Navbar() {
               </NavLink>
               <NavLink className={getLinkClassName} to="/conquistas">
                 Conquistas
+              </NavLink>
+              <NavLink className={getLinkClassName} to="/minhas-avaliacoes">
+                Avaliações
               </NavLink>
             </>
           )}

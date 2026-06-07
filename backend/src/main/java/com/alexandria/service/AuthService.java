@@ -46,7 +46,7 @@ public class AuthService {
         String normalizedEmail = request.getEmail().trim().toLowerCase();
 
         if (userRepository.existsByEmail(normalizedEmail)) {
-            throw new EmailAlreadyExistsException("Este email ja esta em uso");
+            throw new EmailAlreadyExistsException("Este email já está em uso");
         }
 
         User user = new User();
@@ -65,10 +65,10 @@ public class AuthService {
         String normalizedEmail = request.getEmail().trim().toLowerCase();
 
         User user = userRepository.findByEmail(normalizedEmail)
-                .orElseThrow(() -> new InvalidCredentialsException("Email ou senha invalidos"));
+                .orElseThrow(() -> new InvalidCredentialsException("Email ou senha inválidos"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new InvalidCredentialsException("Email ou senha invalidos");
+            throw new InvalidCredentialsException("Email ou senha inválidos");
         }
 
         if (!user.isEnabled()) {
@@ -90,7 +90,7 @@ public class AuthService {
         String normalizedEmail = request.getEmail().trim().toLowerCase();
 
         if (userRepository.existsByEmailAndIdNot(normalizedEmail, user.getId())) {
-            throw new EmailAlreadyExistsException("Este email ja esta em uso");
+            throw new EmailAlreadyExistsException("Este email já está em uso");
         }
 
         user.setName(request.getName().trim());
@@ -107,7 +107,7 @@ public class AuthService {
 
         if (user == null) {
             return new ForgotPasswordResponse(
-                    "Se o email existir, um link de redefinicao sera enviado.",
+                    "Se o email existir, um link de redefinição será enviado.",
                     null,
                     null);
         }
@@ -118,7 +118,7 @@ public class AuthService {
         userRepository.save(user);
 
         return new ForgotPasswordResponse(
-                "Link de redefinicao gerado com sucesso.",
+                "Link de redefinição gerado com sucesso.",
                 resetToken,
                 frontendUrl + "/redefinir-senha?token=" + resetToken);
     }
@@ -126,15 +126,15 @@ public class AuthService {
     @Transactional
     public MessageResponse resetPassword(ResetPasswordRequest request) {
         if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new IllegalArgumentException("As senhas nao coincidem");
+            throw new IllegalArgumentException("As senhas não coincidem");
         }
 
         User user = userRepository.findByResetPasswordToken(request.getToken())
-                .orElseThrow(() -> new ResetTokenInvalidException("Token de redefinicao invalido"));
+                .orElseThrow(() -> new ResetTokenInvalidException("Token de redefinição inválido"));
 
         if (user.getResetPasswordExpiresAt() == null
                 || user.getResetPasswordExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new ResetTokenInvalidException("Token de redefinicao expirado");
+            throw new ResetTokenInvalidException("Token de redefinição expirado");
         }
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -147,6 +147,6 @@ public class AuthService {
 
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new InvalidCredentialsException("Usuario autenticado nao encontrado"));
+                .orElseThrow(() -> new InvalidCredentialsException("Usuário autenticado não encontrado"));
     }
 }

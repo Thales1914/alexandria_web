@@ -36,7 +36,7 @@ public class GoogleBooksService {
 
 
     private static final Logger logger = LoggerFactory.getLogger(GoogleBooksService.class);
-    private static final String DEFAULT_DESCRIPTION = "Descricao nao disponivel.";
+    private static final String DEFAULT_DESCRIPTION = "Descrição não disponível.";
     private static final String DEFAULT_COVER = "https://placehold.co/300x460/112240/64ffda?text=Sem+Capa";
     private static final Map<String, String> CATEGORY_SUBJECTS = Map.of(
             "fantasia", "fantasy",
@@ -47,16 +47,21 @@ public class GoogleBooksService {
             "misterio", "mystery");
     private static final Set<String> WEAK_DESCRIPTIONS = Set.of(
             "descricao nao disponivel.",
+            "descrição não disponível.",
             "descricao indisponivel.",
-            "sem descricao.");
+            "descrição indisponível.",
+            "sem descricao.",
+            "sem descrição.");
     private static final Set<String> STOP_WORDS = Set.of(
             "a", "as", "o", "os", "e", "de", "da", "do", "das", "dos", "the", "and", "of");
     private static final List<String> SECONDARY_MATERIAL_TERMS = List.of(
             "analysis",
             "analise",
+            "análise",
             "companion",
             "critical",
             "critica",
+            "crítica",
             "criticism",
             "education",
             "essay",
@@ -105,7 +110,7 @@ public class GoogleBooksService {
 
         String normalizedTerm = normalizeTerm(termo);  // ← adiciona essa linha!
         if (normalizedTerm.isBlank()) {
-            throw new IllegalArgumentException("O termo de busca e obrigatorio");
+            throw new IllegalArgumentException("O termo de busca é obrigatório");
         }
 
         int boundedStartIndex = Math.max(inicio, 0);
@@ -132,7 +137,7 @@ public class GoogleBooksService {
 
         List<LivroResponse> filteredBooks = filterBooks(books, qualidade, normalizedTerm, ordem, boundedLimit);
         logger.info(
-                "Busca Google Books concluida para termo='{}' com {} resultado(s) apos filtros",
+                "Busca Google Books concluída para termo='{}' com {} resultado(s) após filtros",
                 normalizedTerm,
                 filteredBooks.size());
         return filteredBooks;
@@ -142,14 +147,14 @@ public class GoogleBooksService {
     public LivroResponse buscarDetalhe(String googleBookId) {
         String normalizedId = normalizeTerm(googleBookId);
         if (normalizedId.isBlank()) {
-            throw new IllegalArgumentException("O identificador do livro e obrigatorio");
+            throw new IllegalArgumentException("O identificador do livro é obrigatório");
         }
 
         String url = apiUrl + "/" + encode(normalizedId) + apiKeyParamWithPrefix("?");
-        JsonNode root = executeRequest(url, "Nao foi possivel carregar os detalhes do livro");
+        JsonNode root = executeRequest(url, "Não foi possível carregar os detalhes do livro");
 
         if (!root.hasNonNull("id")) {
-            throw new ResourceNotFoundException("Livro nao encontrado no Google Books");
+            throw new ResourceNotFoundException("Livro não encontrado no Google Books");
         }
 
         return toLivroResponse(root);
@@ -166,7 +171,7 @@ public class GoogleBooksService {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 404) {
-                throw new ResourceNotFoundException("Livro nao encontrado no Google Books");
+                throw new ResourceNotFoundException("Livro não encontrado no Google Books");
             }
 
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
@@ -185,7 +190,7 @@ public class GoogleBooksService {
 
     private LivroResponse toLivroResponse(JsonNode item) {
         JsonNode volumeInfo = item.path("volumeInfo");
-        String title = textOrDefault(volumeInfo.path("title"), "Titulo indisponivel");
+        String title = textOrDefault(volumeInfo.path("title"), "Título indisponível");
         String author = firstArrayValues(volumeInfo.path("authors"), "Autor desconhecido");
         String category = firstArrayValues(volumeInfo.path("categories"), "Sem categoria");
         String thumbnail = textOrDefault(volumeInfo.path("imageLinks").path("thumbnail"), DEFAULT_COVER)
@@ -198,8 +203,8 @@ public class GoogleBooksService {
                 author,
                 stripHtml(textOrDefault(volumeInfo.path("description"), DEFAULT_DESCRIPTION)),
                 thumbnail,
-                textOrDefault(volumeInfo.path("publisher"), "Editora nao informada"),
-                textOrDefault(volumeInfo.path("publishedDate"), "Data nao informada"),
+                textOrDefault(volumeInfo.path("publisher"), "Editora não informada"),
+                textOrDefault(volumeInfo.path("publishedDate"), "Data não informada"),
                 category,
                 volumeInfo.path("pageCount").isNumber() ? volumeInfo.path("pageCount").asInt() : null);
     }

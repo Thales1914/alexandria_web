@@ -34,7 +34,7 @@ const Perfil = () => {
       } catch {
         if (isMounted) {
           setProfile(user);
-          setError('Nao foi possivel sincronizar o perfil agora. Exibindo os dados da sessao local.');
+          setError('Não foi possível sincronizar o perfil agora. Exibindo os dados da sessão local.');
         }
       } finally {
         if (isMounted) {
@@ -58,17 +58,17 @@ const Perfil = () => {
             <span>{avatarInitial}</span>
           </div>
           <h1>Meu perfil</h1>
-          <p>Visualize os dados da conta e avance para a edicao quando precisar.</p>
+          <p>Visualize os dados da conta e avance para a edição quando precisar.</p>
         </header>
 
-        {error && <AlertMessage type="error" title="Sincronizacao parcial" message={error} />}
+        {error && <AlertMessage type="error" title="Sincronização parcial" message={error} />}
 
         <div className="profile-info">
           {PROFILE_FIELDS.map((field) => (
             <div key={field.key} className="profile-field">
               <label>{field.label}</label>
               <div className="profile-field-value">
-                {loading ? 'Carregando...' : profile?.[field.key] || 'Nao informado'}
+                {loading ? 'Carregando...' : profile?.[field.key] || 'Não informado'}
               </div>
             </div>
           ))}
@@ -83,6 +83,9 @@ const Perfil = () => {
           <div className="profile-actions">
             <Button variant="secondary" onClick={() => navigate('/perfil/editar')}>
               Editar perfil
+            </Button>
+            <Button variant="secondary" onClick={() => navigate('/minhas-avaliacoes')}>
+              Minhas avaliações
             </Button>
             <button
               className="profile-logout-btn"

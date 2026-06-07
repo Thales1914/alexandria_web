@@ -21,9 +21,6 @@
   gap: 24px;
 }
 
-/* ── Brand com coruja ──────────────────────────────────────────────────────── */ 
-
-
 .navbar__brand {
   display: flex;
   align-items: center;
@@ -41,7 +38,6 @@
   width: 42px;
   height: 42px;
   object-fit: contain;
-  /* mix-blend-mode: screen faz o fundo escuro da imagem desaparecer */
   mix-blend-mode: screen;
   filter: brightness(1.25) saturate(1.1);
   flex-shrink: 0;
@@ -52,11 +48,12 @@
   transform: translateY(-3px) rotate(-8deg);
 }
 
-/* ── Nav links ─────────────────────────────────────────────────────────────── */
 .navbar__nav {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .navbar__link {
@@ -72,7 +69,6 @@
   color: var(--cyan);
 }
 
-/* ── Auth area ─────────────────────────────────────────────────────────────── */
 .navbar__auth,
 .navbar__actions {
   display: flex;
@@ -133,7 +129,6 @@
   transform: scale(1.05);
 }
 
-/* ── Responsivo ────────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .navbar__nav {
     gap: 16px;

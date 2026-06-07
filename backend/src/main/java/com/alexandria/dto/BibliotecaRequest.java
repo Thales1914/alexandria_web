@@ -5,10 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record BibliotecaRequest(
-        @NotNull(message = "O usuario e obrigatorio")
+        @NotNull(message = "O usuário é obrigatório")
         Long usuarioId,
 
-        @NotBlank(message = "O identificador do livro e obrigatorio")
+        @NotBlank(message = "O identificador do livro é obrigatório")
         String googleBookId,
 
         StatusLeitura statusLeitura

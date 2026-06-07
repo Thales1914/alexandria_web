@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         com.alexandria.model.User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
 
         return User.withUsername(user.getEmail())
                 .password(user.getPassword())

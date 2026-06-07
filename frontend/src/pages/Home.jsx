@@ -15,7 +15,7 @@ const SHOWCASE_BOOKS = [
   {
     title: 'Torto Arado',
     author: 'Itamar Vieira Junior',
-    category: 'Romance contemporaneo',
+    category: 'Romance contemporâneo',
     tone: 'linear-gradient(145deg, #331d2c 0%, #8f3f4d 54%, #e0a458 100%)',
   },
   {
@@ -27,7 +27,7 @@ const SHOWCASE_BOOKS = [
   {
     title: '1984',
     author: 'George Orwell',
-    category: 'Ficcao politica',
+    category: 'Ficção política',
     tone: 'linear-gradient(145deg, #22131f 0%, #6d2f52 54%, #ff6b6b 100%)',
   },
 ];
@@ -35,25 +35,25 @@ const SHOWCASE_BOOKS = [
 const PRODUCT_FEATURES = [
   {
     label: 'Busca',
-    title: 'Encontre livros pelo catalogo',
-    text: 'Pesquise obras e visualize dados essenciais como titulo, autor, capa e descricao.',
+    title: 'Encontre livros pelo catálogo',
+    text: 'Pesquise obras e visualize dados essenciais como título, autor, capa e descrição.',
   },
   {
     label: 'Biblioteca',
     title: 'Monte uma estante organizada',
-    text: 'Salve livros em um unico lugar e mantenha sua jornada de leitura facil de consultar.',
+    text: 'Salve livros em um único lugar e mantenha sua jornada de leitura fácil de consultar.',
   },
   {
-    label: 'Avaliacao',
+    label: 'Avaliação',
     title: 'Registre nota e resenha',
-    text: 'Guarde opinioes sobre cada obra e transforme leituras em historico pessoal.',
+    text: 'Guarde opiniões sobre cada obra e transforme leituras em histórico pessoal.',
   },
 ];
 
 const WORKFLOW_STEPS = [
-  'Buscar livros no catalogo',
+  'Buscar livros no catálogo',
   'Abrir detalhes da obra',
-  'Adicionar a biblioteca',
+  'Adicionar à biblioteca',
   'Organizar e avaliar depois',
 ];
 
@@ -71,10 +71,10 @@ function Home() {
 
     if (!normalizedSearch) {
       setInputState('error');
-      setInputMessage('Digite o titulo de um livro para continuar.');
+      setInputMessage('Digite o título de um livro para continuar.');
       setAlert({
         type: 'error',
-        title: 'Busca nao iniciada',
+        title: 'Busca não iniciada',
         message: 'Preencha o campo com o nome de um livro antes de pesquisar.',
       });
       return;
@@ -110,14 +110,14 @@ function Home() {
           <h1>Uma biblioteca pessoal para descobrir, organizar e lembrar livros.</h1>
           <p className="home-hero__text">
             Busque obras, veja detalhes importantes e construa sua jornada de leitura
-            em uma experiencia web clara, bonita e focada em livros.
+            em uma experiência web clara, bonita e focada em livros.
           </p>
 
           <form className="home-search" onSubmit={handleSearch}>
             <Input
-              hint="Busque por titulo, autor ou tema."
+              hint="Busque por título, autor ou tema."
               id="book-search"
-              label="Buscar no catalogo"
+              label="Buscar no catálogo"
               onChange={handleChange}
               placeholder="Ex.: Machado de Assis"
               state={inputState}
@@ -134,9 +134,9 @@ function Home() {
           />
 
           <div className="home-hero__actions">
-            <Button onClick={() => navigate('/cadastro')}>Comecar agora</Button>
+            <Button onClick={() => navigate('/cadastro')}>Começar agora</Button>
             <Link className="home-text-link" to="/explorar">
-              Ver catalogo
+              Ver catálogo
             </Link>
           </div>
 
@@ -147,9 +147,9 @@ function Home() {
           </div>
         </div>
 
-        <div className="home-hero__showcase" aria-label="Previa visual do Alexandria">
+        <div className="home-hero__showcase" aria-label="Prévia visual do Alexandria">
           <div className="home-showcase__header">
-            <span>Previa da experiencia</span>
+            <span>Prévia da experiência</span>
             <strong>Web app</strong>
           </div>
 
@@ -181,7 +181,7 @@ function Home() {
       <section className="home-section">
         <div className="home-section__header">
           <p className="home-kicker">O que o sistema entrega</p>
-          <h2>Uma jornada simples da descoberta ate a avaliacao.</h2>
+          <h2>Uma jornada simples da descoberta até a avaliação.</h2>
         </div>
 
         <div className="home-feature-grid">
@@ -198,11 +198,11 @@ function Home() {
       <section className="home-workflow">
         <div className="home-workflow__copy">
           <p className="home-kicker">Fluxo principal</p>
-          <h2>Do catalogo para a biblioteca, sem perder contexto.</h2>
+          <h2>Do catálogo para a biblioteca, sem perder contexto.</h2>
           <p>
-            A tela inicial apresenta o produto sem depender de dados de usuario.
-            Depois do login, cada pessoa encontra sua propria biblioteca e suas
-            informacoes de leitura.
+            A tela inicial apresenta o produto sem depender de dados de usuário.
+            Depois do login, cada pessoa encontra sua própria biblioteca e suas
+            informações de leitura.
           </p>
         </div>
 
