@@ -18,7 +18,7 @@ export const NIVEIS = [
   { numero: 3, label: 'EDERSON',  minXP: 300,  maxXP: 600  },
   { numero: 4, label: 'LAUAN',    minXP: 600,  maxXP: 1000 },
   { numero: 5, label: 'JOÃO',     minXP: 1000, maxXP: 3000  },
-  { numero: 6, label: 'Mestre de tudo e todos ESTAVÃO', minXP: 3000, maxXP: Infinity },
+  { numero: 6, label: 'Mestre de tudo e de todos', minXP: 3000, maxXP: Infinity },
 ];
 
 // ── Conquistas ────────────────────────────────────────────────────────────────
