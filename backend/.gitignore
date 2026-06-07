@@ -1,6 +1,9 @@
 HELP.md
 target/
 .mvn/
+!.mvn/
+!.mvn/wrapper/
+!.mvn/wrapper/maven-wrapper.properties
 .m2/
 .env
 
