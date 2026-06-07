@@ -12,7 +12,6 @@ function Footer() {
       <div className="footer__content">
         <div className="footer__brand">
           <Link to="/" className="footer__logo" aria-label="Alexandria — Página inicial">
-            <img src="/coruja.png" alt="" className="footer__owl" />
             <span>Alexandria</span>
           </Link>
           <p className="footer__slogan">
