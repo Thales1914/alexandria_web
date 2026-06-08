@@ -100,7 +100,7 @@
 }
 
 .comunidade__card p,
-.comunidade__activity-header span {
+.comunidade__activity-meta time {
   color: var(--slate);
 }
 
@@ -186,6 +186,26 @@
 .comunidade__activity-avatar {
   width: 42px;
   height: 42px;
+  flex: 0 0 42px;
+}
+
+.comunidade__activity-meta {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+
+.comunidade__activity-meta strong {
+  color: var(--white);
+  overflow-wrap: anywhere;
+}
+
+.comunidade__activity-meta time {
+  flex: 0 0 auto;
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 .comunidade__post-content {
@@ -235,6 +255,11 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+.comunidade__comment-meta {
+  min-width: 0;
+  flex-wrap: wrap;
 }
 
 .comunidade__comments-header h4 {
@@ -291,11 +316,13 @@
 .comunidade__comment-meta strong {
   color: var(--white);
   font-size: 0.9rem;
+  overflow-wrap: anywhere;
 }
 
-.comunidade__comment-meta span {
+.comunidade__comment-meta time {
   color: var(--slate);
   font-size: 0.78rem;
+  white-space: nowrap;
 }
 
 .comunidade__comment-body p {

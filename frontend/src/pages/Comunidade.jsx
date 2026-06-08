@@ -354,9 +354,9 @@ function Comunidade() {
                     <div className="comunidade__activity-avatar">
                       {(post.authorName || post.authorEmail || '?').charAt(0).toUpperCase()}
                     </div>
-                    <div>
+                    <div className="comunidade__activity-meta">
                       <strong>{post.authorName}</strong>
-                      <span>{formatTimeAgo(post.createdAt)}</span>
+                      <time dateTime={post.createdAt}>{formatTimeAgo(post.createdAt)}</time>
                     </div>
                   </div>
 
@@ -404,7 +404,7 @@ function Comunidade() {
                               <div className="comunidade__comment-body">
                                 <div className="comunidade__comment-meta">
                                   <strong>{comment.authorName}</strong>
-                                  <span>{formatTimeAgo(comment.createdAt)}</span>
+                                  <time dateTime={comment.createdAt}>{formatTimeAgo(comment.createdAt)}</time>
                                 </div>
                                 <p>{comment.content}</p>
                                 {comment.ownedByMe && (
