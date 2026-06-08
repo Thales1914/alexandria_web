@@ -1,4 +1,7 @@
+import { apiRequest } from './api';
+
 const STORAGE_KEY = 'alexandria.gamificacao';
+const USER_STORAGE_PREFIX = 'alexandria.gamificacao.user.';
 
 // ── Ações que concedem XP ─────────────────────────────────────────────────────
 export const ACOES_XP = {
@@ -110,7 +113,7 @@ export function getProgresso(xp) {
 }
 
 // ── Persistência ──────────────────────────────────────────────────────────────
-const ESTADO_INICIAL = {
+export const ESTADO_INICIAL = {
   xp: 0,
   conquistasDesbloqueadas: [],
   historico: [],
@@ -120,29 +123,87 @@ const ESTADO_INICIAL = {
     avaliacoes: 0,
     favoritos: 0,
     posts: 0,
+    abandonados: 0,
+    queroLer: 0,
+    lendo: 0,
   },
 };
 
-export function carregarEstado() {
+export function criarEstadoInicial() {
+  return {
+    ...ESTADO_INICIAL,
+    conquistasDesbloqueadas: [],
+    historico: [],
+    stats: { ...ESTADO_INICIAL.stats },
+  };
+}
+
+export function normalizarEstado(estado) {
+  const base = criarEstadoInicial();
+  if (!estado || typeof estado !== 'object') return base;
+
+  return {
+    ...base,
+    xp: Math.max(0, Number(estado.xp) || 0),
+    conquistasDesbloqueadas: Array.isArray(estado.conquistasDesbloqueadas)
+      ? [...new Set(estado.conquistasDesbloqueadas.filter(Boolean))]
+      : [],
+    historico: Array.isArray(estado.historico)
+      ? estado.historico
+          .filter((item) => item && item.label && item.timestamp)
+          .slice(0, 50)
+      : [],
+    stats: {
+      ...base.stats,
+      ...(estado.stats || {}),
+    },
+  };
+}
+
+function getUserStorageKey(userKey) {
+  return `${USER_STORAGE_PREFIX}${userKey}`;
+}
+
+export function limparEstadoLegado() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return ESTADO_INICIAL;
-    const parsed = JSON.parse(raw);
-    return {
-      ...ESTADO_INICIAL,
-      ...parsed,
-      stats: { ...ESTADO_INICIAL.stats, ...(parsed.stats ?? {}) },
-    };
+    localStorage.removeItem(STORAGE_KEY);
   } catch {
-    return ESTADO_INICIAL;
+    // ignore storage access failures
   }
 }
 
-export function salvarEstado(estado) {
+export function carregarEstadoLocal(userKey) {
+  if (!userKey) return criarEstadoInicial();
+
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
+    const raw = localStorage.getItem(getUserStorageKey(userKey));
+    if (!raw) return criarEstadoInicial();
+    return normalizarEstado(JSON.parse(raw));
+  } catch {
+    return criarEstadoInicial();
+  }
+}
+
+export function salvarEstadoLocal(userKey, estado) {
+  if (!userKey) return;
+
+  try {
+    localStorage.setItem(getUserStorageKey(userKey), JSON.stringify(normalizarEstado(estado)));
   } catch {
     // falha silenciosa — storage pode estar cheio
   }
 }
-//obviamente como vocês viram isso aqui é muito pouco precisamos de mais conquistas.
+
+export async function buscarEstadoGamificacao(token) {
+  const estado = await apiRequest('/api/gamificacao', { token });
+  return normalizarEstado(estado);
+}
+
+export async function salvarEstadoGamificacao(estado, token) {
+  const salvo = await apiRequest('/api/gamificacao', {
+    method: 'PUT',
+    token,
+    body: normalizarEstado(estado),
+  });
+  return normalizarEstado(salvo);
+}
