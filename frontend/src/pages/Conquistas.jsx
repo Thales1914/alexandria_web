@@ -56,7 +56,7 @@ function Conquistas() {
               </p>
             ) : (
               <p className="conquistas__level-next">
-                🦉 Nível máximo alcançado — você é um Mestre das Letras!
+                🦉 Nível máximo alcançado — você é {nivel.label}!
               </p>
             )}
           </div>

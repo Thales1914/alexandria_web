@@ -14,14 +14,13 @@ export const ACOES_XP = {
 };
 
 // ── Níveis ────────────────────────────────────────────────────────────────────
-//EXEMPLOS
 export const NIVEIS = [
-  { numero: 1, label: 'THALES',   minXP: 0,    maxXP: 100  },
-  { numero: 2, label: 'DAVI',     minXP: 100,  maxXP: 300  },
-  { numero: 3, label: 'EDERSON',  minXP: 300,  maxXP: 600  },
-  { numero: 4, label: 'LAUAN',    minXP: 600,  maxXP: 1000 },
-  { numero: 5, label: 'JOÃO',     minXP: 1000, maxXP: 3000  },
-  { numero: 6, label: 'Mestre de tudo e de todos', minXP: 3000, maxXP: Infinity },
+  { numero: 1, label: 'Leitor Iniciante', minXP: 0, maxXP: 100 },
+  { numero: 2, label: 'Leitor Curioso', minXP: 100, maxXP: 300 },
+  { numero: 3, label: 'Leitor Constante', minXP: 300, maxXP: 600 },
+  { numero: 4, label: 'Leitor Experiente', minXP: 600, maxXP: 1000 },
+  { numero: 5, label: 'Mestre das Letras', minXP: 1000, maxXP: 3000 },
+  { numero: 6, label: 'Guardião de Alexandria', minXP: 3000, maxXP: Infinity },
 ];
 
 // ── Conquistas ────────────────────────────────────────────────────────────────
