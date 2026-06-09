@@ -6,9 +6,11 @@ import com.alexandria.exception.DuplicateResourceException;
 import com.alexandria.exception.InvalidCredentialsException;
 import com.alexandria.exception.ResourceNotFoundException;
 import com.alexandria.model.Avaliacao;
+import com.alexandria.model.ComunidadePost;
 import com.alexandria.model.Livro;
 import com.alexandria.model.User;
 import com.alexandria.repository.AvaliacaoRepository;
+import com.alexandria.repository.ComunidadePostRepository;
 import com.alexandria.repository.LivroRepository;
 import com.alexandria.repository.UserRepository;
 import java.util.List;
@@ -21,6 +23,7 @@ public class AvaliacaoService {
     private final AvaliacaoRepository avaliacaoRepository;
     private final UserRepository userRepository;
     private final LivroRepository livroRepository;
+    private final ComunidadePostRepository comunidadePostRepository;
     private final LivroService livroService;
     private final LivroMapper livroMapper;
 
@@ -28,11 +31,13 @@ public class AvaliacaoService {
             AvaliacaoRepository avaliacaoRepository,
             UserRepository userRepository,
             LivroRepository livroRepository,
+            ComunidadePostRepository comunidadePostRepository,
             LivroService livroService,
             LivroMapper livroMapper) {
         this.avaliacaoRepository = avaliacaoRepository;
         this.userRepository = userRepository;
         this.livroRepository = livroRepository;
+        this.comunidadePostRepository = comunidadePostRepository;
         this.livroService = livroService;
         this.livroMapper = livroMapper;
     }
@@ -52,7 +57,10 @@ public class AvaliacaoService {
         avaliacao.setNota(request.nota());
         avaliacao.setResenha(normalizeResenha(request.resenha()));
 
-        return toResponse(avaliacaoRepository.save(avaliacao));
+        Avaliacao saved = avaliacaoRepository.save(avaliacao);
+        publicarAvaliacaoNaComunidade(saved);
+
+        return toResponse(saved);
     }
 
     @Transactional(readOnly = true)
@@ -120,6 +128,42 @@ public class AvaliacaoService {
 
     private String normalizeResenha(String value) {
         return value == null ? null : value.trim();
+    }
+
+    private void publicarAvaliacaoNaComunidade(Avaliacao avaliacao) {
+        ComunidadePost post = new ComunidadePost();
+        post.setUsuario(avaliacao.getUsuario());
+        post.setConteudo(montarConteudoComunidade(avaliacao));
+        comunidadePostRepository.save(post);
+    }
+
+    private String montarConteudoComunidade(Avaliacao avaliacao) {
+        String titulo = safeText(avaliacao.getLivro().getTitulo(), "um livro");
+        StringBuilder content = new StringBuilder()
+                .append("avaliou \"")
+                .append(titulo)
+                .append("\" com ")
+                .append(avaliacao.getNota())
+                .append("/5.");
+
+        String resenha = normalizeResenha(avaliacao.getResenha());
+        if (resenha != null && !resenha.isBlank()) {
+            content.append(" ").append(limitText(resenha, 260));
+        }
+
+        return limitText(content.toString(), 1000);
+    }
+
+    private String safeText(String value, String fallback) {
+        return value == null || value.isBlank() ? fallback : value.trim();
+    }
+
+    private String limitText(String value, int maxLength) {
+        if (value.length() <= maxLength) {
+            return value;
+        }
+
+        return value.substring(0, Math.max(0, maxLength - 3)).trim() + "...";
     }
 
     private AvaliacaoResponse toResponse(Avaliacao avaliacao) {
