@@ -105,18 +105,24 @@
 
 .biblioteca__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(270px, 340px));
+  align-items: start;
   gap: 20px;
 }
 
 .biblioteca__card {
   overflow: hidden;
+  width: 100%;
 }
 
 .biblioteca__card img {
   width: 100%;
-  height: 330px;
-  object-fit: cover;
+  height: 240px;
+  padding: 16px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(100, 255, 218, 0.1), transparent 34%),
+    rgba(10, 25, 47, 0.46);
+  object-fit: contain;
 }
 
 .biblioteca__card-body {
@@ -147,7 +153,11 @@
 
 .biblioteca__description {
   color: var(--slate);
+  display: -webkit-box;
+  overflow: hidden;
   line-height: 1.65;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
 }
 
 .biblioteca__card label {
@@ -201,5 +211,13 @@
 
   .biblioteca__stats {
     width: 100%;
+  }
+
+  .biblioteca__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .biblioteca__card img {
+    height: 220px;
   }
 }
