@@ -1,41 +1,25 @@
-# Alexandria Frontend (React + Vite)
+# Alexandria Frontend
 
-Aplicacao frontend do projeto Alexandria.
+Aplicacao web do ALEXANDRIA desenvolvida com React e Vite.
 
 ## Configuracao de ambiente
 
-1. Crie o arquivo `frontend/.env.local`.
-2. Preencha as variaveis de ambiente do frontend.
-3. Preencha a chave da Google Books API em `VITE_GOOGLE_BOOKS_API_KEY`.
-
-Exemplo:
+Crie o arquivo `frontend/.env.local` e informe a URL do backend:
 
 ```env
 VITE_API_URL=http://localhost:8080
-VITE_GOOGLE_BOOKS_URL=https://www.googleapis.com/books/v1/volumes
-VITE_GOOGLE_BOOKS_API_KEY=SUA_CHAVE_AQUI
-VITE_GOOGLE_BOOKS_LANG=pt
-VITE_GOOGLE_BOOKS_COUNTRY=BR
 ```
 
-## Onde colocar a chave
+A chave da Google Books API deve ficar no backend, nao no frontend.
 
-A chave deve ficar no arquivo:
-
-`frontend/.env.local`
-
-Use a variavel:
-
-`VITE_GOOGLE_BOOKS_API_KEY=...`
-
-## Rodando o projeto
+## Rodando localmente
 
 ```bash
 npm install
 npm run dev
 ```
 
-Build de producao:
+## Build de producao
 
 ```bash
 npm run build
