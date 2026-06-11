@@ -4,9 +4,11 @@ Thumbs.db
 
 # Local backups
 .repo-backups/
+*.zip
 
 # Frontend runtime artifacts
 frontend/.vite-dev*.log
+frontend/.expo/
 frontend/node_modules/
 frontend/dist/
 frontend/dist-ssr/
